@@ -9,6 +9,7 @@ import { useCountry } from "@/lib/CountryContext";
 import { africanCountries } from "@/lib/countries";
 import { countryMacroData, getMacroForCountry, CountryMacro, MacroMetric } from "@/lib/macroData";
 import { researchReports, ResearchReport } from "@/lib/researchData";
+import { newsData, NewsItem } from "@/lib/newsData";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -82,6 +83,14 @@ export default function Home() {
       gdpData: selectedData[0].gdpData,
       inflationData: selectedData[0].inflationData,
     };
+  }, [selectedCountries]);
+
+  // Filter news for current selection
+  const activeNews = useMemo(() => {
+    if (selectedCountries.length === 0) return newsData.filter(n => !n.countryCode).slice(0, 3);
+    const filtered = newsData.filter(n => n.countryCode && selectedCountries.includes(n.countryCode));
+    if (filtered.length === 0) return newsData.filter(n => !n.countryCode).slice(0, 3);
+    return filtered.slice(0, 3);
   }, [selectedCountries]);
 
   const gdpData = activeMacro.gdpData;
@@ -199,6 +208,46 @@ export default function Home() {
               color="#575757" 
             />
           </div>
+        </div>
+      </div>
+
+      {/* Dynamic Economic Highlights Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold text-foreground">Economic Highlights</h3>
+          <span className="text-xs font-bold text-primary uppercase tracking-widest bg-primary/5 px-2 py-1 rounded border border-primary/10">
+            {selectedCountries.length > 0 ? "Regional Focus" : "Continental View"}
+          </span>
+        </div>
+        
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {activeNews.map((news: NewsItem) => (
+            <div 
+              key={news.id}
+              className="group p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/20 transition-all shadow-sm hover:shadow-md cursor-default"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <news.icon className="h-5 w-5 text-primary" />
+                </div>
+                <span className="text-[10px] font-bold text-secondary uppercase tracking-tight">
+                  {news.date}
+                </span>
+              </div>
+              <h4 className="font-bold text-base text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                {news.title}
+              </h4>
+              <p className="text-xs text-secondary leading-relaxed line-clamp-3">
+                {news.summary}
+              </p>
+              <div className="mt-4 pt-4 border-t border-secondary/5 flex items-center justify-between">
+                <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 rounded bg-primary/5">
+                  {news.category}
+                </span>
+                <ArrowUpRight className="h-4 w-4 text-secondary group-hover:text-primary transition-all opacity-0 group-hover:opacity-100" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
