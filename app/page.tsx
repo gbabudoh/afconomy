@@ -1,36 +1,69 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Dashboard from "@/components/Dashboard";
 import CurrencyConverter from "@/components/CurrencyConverter";
 import DataChart from "@/components/DataChart";
-import { TrendingUp, Users, DollarSign, Activity, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2 } from "lucide-react";
+import { TrendingUp, DollarSign, Activity, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2 } from "lucide-react";
 import { useCountry } from "@/lib/CountryContext";
 import { africanCountries } from "@/lib/countries";
-import { countryMacroData } from "@/lib/macroData";
+import { countryMacroData, MacroMetric } from "@/lib/macroData";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("overview");
   const { selectedCountries } = useCountry();
 
   // Resolve active macro data
-  // If exactly one country is selected and we have data for it, use it. Otherwise default.
-  const activeDataKey = selectedCountries.length === 1 && countryMacroData[selectedCountries[0]] 
-    ? selectedCountries[0] 
-    : "default";
-  
-  const activeMacro = countryMacroData[activeDataKey];
+  const activeMacro = useMemo(() => {
+    if (selectedCountries.length === 0) return countryMacroData.default;
 
-  // Helper to check if a country is selected (for filtering lists like markets/currencies)
+    if (selectedCountries.length === 1) {
+      const code = selectedCountries[0].toUpperCase();
+      return countryMacroData[code] || countryMacroData.default;
+    }
+
+    // Multiple countries selected - Aggregate data
+    const selectedData = selectedCountries
+      .map(code => countryMacroData[code.toUpperCase()])
+      .filter(Boolean);
+
+    if (selectedData.length === 0) return countryMacroData.default;
+
+    // Helper to parse population (e.g., "114M" -> 114, "1.4B" -> 1400)
+    const parsePop = (s: string) => {
+      const val = parseFloat(s);
+      if (s.includes('B')) return val * 1000;
+      return val;
+    };
+
+    // Aggregate metrics
+    const totalPop = selectedData.reduce((sum, d) => sum + parsePop(d.metrics[2].value), 0);
+    const avgGrowth = selectedData.reduce((sum, d) => sum + parseFloat(d.metrics[0].value), 0) / selectedData.length;
+    const avgInflation = selectedData.reduce((sum, d) => sum + parseFloat(d.metrics[1].value), 0) / selectedData.length;
+    const totalTrade = selectedData.reduce((sum, d) => sum + parseFloat(d.metrics[3].value.replace(/[^0-9.-]/g, '')), 0);
+
+    return {
+      metrics: [
+        { ...selectedData[0].metrics[0], value: `${avgGrowth.toFixed(1)}%`, trend: "Avg" },
+        { ...selectedData[0].metrics[1], value: `${avgInflation.toFixed(1)}%`, trend: "Avg" },
+        { ...selectedData[0].metrics[2], value: totalPop >= 1000 ? `${(totalPop / 1000).toFixed(1)}B` : `${Math.round(totalPop)}M`, trend: "Total" },
+        { ...selectedData[0].metrics[3], value: `${totalTrade >= 0 ? '+' : ''}$${totalTrade.toFixed(1)}B`, trend: "Total", color: totalTrade >= 0 ? 'text-emerald-600' : 'text-red-500' },
+      ],
+      // For charts in multi-select, we'll just use the first country's trend or default to continental
+      gdpData: selectedData[0].gdpData,
+      inflationData: selectedData[0].inflationData,
+    };
+  }, [selectedCountries]);
+
+  const gdpData = activeMacro.gdpData;
+  const inflationData = activeMacro.inflationData;
+  const macroMetrics = activeMacro.metrics;
+
   const isSelected = (countryName: string) => {
     if (selectedCountries.length === 0) return true;
     const country = africanCountries.find(c => c.name === countryName);
     return country ? selectedCountries.includes(country.code) : false;
   };
-
-  const gdpData = activeMacro.gdpData;
-  const inflationData = activeMacro.inflationData;
-  const macroMetrics = activeMacro.metrics;
 
   const regionalTradeData = [
     { year: "2019", growth: 12.1 },
@@ -75,7 +108,7 @@ export default function Home() {
 
       {/* Metrics Grid */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {macroMetrics.map((metric) => (
+        {macroMetrics.map((metric: MacroMetric) => (
           <div 
             key={metric.name} 
             className="group relative overflow-hidden rounded-xl border border-secondary/10 bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/20 hover:bg-secondary/5"
