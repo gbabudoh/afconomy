@@ -4,13 +4,14 @@ import { useState, useMemo } from "react";
 import Dashboard from "@/components/Dashboard";
 import CurrencyConverter from "@/components/CurrencyConverter";
 import DataChart from "@/components/DataChart";
-import { TrendingUp, DollarSign, Activity, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2 } from "lucide-react";
+import { TrendingUp, DollarSign, Activity, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2, GraduationCap, Briefcase, LucideIcon } from "lucide-react";
 import { useCountry } from "@/lib/CountryContext";
 import { africanCountries } from "@/lib/countries";
-import { countryMacroData, MacroMetric } from "@/lib/macroData";
+import { countryMacroData, CountryMacro, MacroMetric } from "@/lib/macroData";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [deepDiveCategory, setDeepDiveCategory] = useState<keyof Omit<CountryMacro, 'metrics' | 'gdpData' | 'inflationData'>>("financial");
   const { selectedCountries } = useCountry();
 
   // Resolve active macro data
@@ -42,6 +43,28 @@ export default function Home() {
     const avgInflation = selectedData.reduce((sum, d) => sum + parseFloat(d.metrics[1].value), 0) / selectedData.length;
     const totalTrade = selectedData.reduce((sum, d) => sum + parseFloat(d.metrics[3].value.replace(/[^0-9.-]/g, '')), 0);
 
+    // Helper for multi-metric aggregation (averaging)
+    const aggregateMetrics = (key: keyof CountryMacro) => {
+      const baseMetrics = selectedData[0][key];
+      if (!Array.isArray(baseMetrics)) return baseMetrics;
+
+      return (baseMetrics as MacroMetric[]).map((m, i) => {
+        const values = selectedData.map(d => {
+          const targetMetrics = d[key] as MacroMetric[];
+          const target = targetMetrics[i];
+          return target ? parseFloat(target.value) : 0;
+        });
+        const avg = values.reduce((a, b) => a + b, 0) / values.length;
+        
+        // Return MacroMetric shape
+        return {
+          ...m,
+          value: m.value.includes('%') ? `${avg.toFixed(1)}%` : m.value,
+          trend: "Avg"
+        } as MacroMetric;
+      });
+    };
+
     return {
       metrics: [
         { ...selectedData[0].metrics[0], value: `${avgGrowth.toFixed(1)}%`, trend: "Avg" },
@@ -49,6 +72,11 @@ export default function Home() {
         { ...selectedData[0].metrics[2], value: totalPop >= 1000 ? `${(totalPop / 1000).toFixed(1)}B` : `${Math.round(totalPop)}M`, trend: "Total" },
         { ...selectedData[0].metrics[3], value: `${totalTrade >= 0 ? '+' : ''}$${totalTrade.toFixed(1)}B`, trend: "Total", color: totalTrade >= 0 ? 'text-emerald-600' : 'text-red-500' },
       ],
+      financial: aggregateMetrics('financial') as MacroMetric[],
+      education: aggregateMetrics('education') as MacroMetric[],
+      employment: aggregateMetrics('employment') as MacroMetric[],
+      trade: selectedData[0].trade, // Trade is categorical, just use first
+      performance: aggregateMetrics('performance') as MacroMetric[],
       // For charts in multi-select, we'll just use the first country's trend or default to continental
       gdpData: selectedData[0].gdpData,
       inflationData: selectedData[0].inflationData,
@@ -301,99 +329,154 @@ export default function Home() {
     </section>
   );
 
-  const renderDeepDive = () => (
-    <section className="space-y-8">
-      {/* Header */}
-      <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">Deep Dive Analysis</h2>
-        <p className="text-base text-secondary">Comprehensive insights and detailed economic analysis</p>
-      </div>
+  const renderDeepDive = () => {
+    const categories: { key: keyof Omit<CountryMacro, 'metrics' | 'gdpData' | 'inflationData'>; label: string; icon: LucideIcon }[] = [
+      { key: "financial", label: "Financial", icon: DollarSign },
+      { key: "education", label: "Education", icon: GraduationCap },
+      { key: "employment", label: "Employment", icon: Briefcase },
+      { key: "trade", label: "Trade", icon: Globe },
+      { key: "performance", label: "Performance", icon: BarChart3 },
+    ];
 
-      {/* Analysis Cards */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all">
-          <div className="flex items-start gap-4 mb-4">
-            <div className="p-3 rounded-lg bg-primary/10">
-              <Globe className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-foreground mb-2">Regional Trade Analysis</h3>
-              <p className="text-sm text-secondary">
-                Examining intra-African trade patterns and the impact of AfCFTA on regional economies.
-              </p>
-            </div>
+    const activeMetrics = activeMacro[deepDiveCategory] as MacroMetric[];
+
+    return (
+      <section className="space-y-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground">Deep Dive Analysis</h2>
+            <p className="text-base text-secondary">Specialized economic indicators and regional performance</p>
           </div>
-          <div className="h-[200px]">
-            <DataChart 
-              data={regionalTradeData} 
-              type="area" 
-              dataKey="growth" 
-              categoryKey="year" 
-              color="#ff0201" 
-              height={200}
-            />
+          
+          {/* Category Tabs */}
+          <div className="flex bg-secondary/5 p-1 rounded-xl border border-secondary/10 overflow-x-auto no-scrollbar">
+            {categories.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setDeepDiveCategory(cat.key)}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg transition-all whitespace-nowrap ${
+                  deepDiveCategory === cat.key 
+                    ? "bg-card text-primary shadow-sm ring-1 ring-border" 
+                    : "text-secondary hover:text-foreground hover:bg-secondary/5"
+                }`}
+              >
+                <cat.icon className="h-4 w-4" />
+                {cat.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all">
-          <div className="flex items-start gap-4 mb-4">
-            <div className="p-3 rounded-lg bg-primary/10">
-              <Building2 className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-foreground mb-2">Sector Performance</h3>
-              <p className="text-sm text-secondary">
-                Deep analysis of key sectors including technology, agriculture, and manufacturing.
-              </p>
-            </div>
-          </div>
-          <div className="h-[200px]">
-            <DataChart 
-              data={sectorPerformanceData} 
-              type="bar" 
-              dataKey="performance" 
-              categoryKey="sector" 
-              color="#575757" 
-              height={200}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Research Reports */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold text-foreground">Featured Research</h3>
-        <div className="grid gap-4">
-          {[
-            { title: "Digital Economy Growth in Sub-Saharan Africa", category: "Technology", date: "Dec 2024" },
-            { title: "Agricultural Productivity and Food Security Trends", category: "Agriculture", date: "Nov 2024" },
-            { title: "Infrastructure Investment and Economic Development", category: "Infrastructure", date: "Nov 2024" },
-          ].map((report, i) => (
+        {/* Specialized Metrics Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {activeMetrics.map((metric) => (
             <div 
-              key={i}
-              className="group flex items-center gap-4 p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/30 transition-all cursor-pointer shadow-sm hover:shadow-md"
+              key={metric.name}
+              className="group rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all hover:border-primary/20"
             >
-              <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Activity className="h-6 w-6 text-primary" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-1 rounded border border-primary/10">
-                    {report.category}
-                  </span>
-                  <span className="text-xs text-secondary">{report.date}</span>
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 rounded-lg bg-secondary/5 group-hover:bg-primary/5 transition-colors">
+                  <metric.icon className={`h-5 w-5 ${metric.color}`} />
                 </div>
-                <h4 className="font-bold text-base text-foreground group-hover:text-primary transition-colors">
-                  {report.title}
-                </h4>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-secondary bg-secondary/5 px-2 py-1 rounded">
+                  {metric.trend}
+                </span>
               </div>
-              <ArrowUpRight className="h-5 w-5 text-secondary group-hover:text-primary transition-colors" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-secondary">{metric.name}</p>
+                <h3 className="text-2xl font-bold text-foreground">{metric.value}</h3>
+              </div>
             </div>
           ))}
         </div>
-      </div>
-    </section>
-  );
+
+        {/* Existing Analysis Charts */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <Globe className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-foreground mb-2">Regional Trade Analysis</h3>
+                <p className="text-sm text-secondary">
+                  Examining intra-African trade patterns and the impact of AfCFTA on regional economies.
+                </p>
+              </div>
+            </div>
+            <div className="h-[200px]">
+              <DataChart 
+                data={regionalTradeData} 
+                type="area" 
+                dataKey="growth" 
+                categoryKey="year" 
+                color="#ff0201" 
+                height={200}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <Building2 className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-foreground mb-2">Sector Performance</h3>
+                <p className="text-sm text-secondary">
+                  Deep analysis of key sectors including technology, agriculture, and manufacturing.
+                </p>
+              </div>
+            </div>
+            <div className="h-[200px]">
+              <DataChart 
+                data={sectorPerformanceData} 
+                type="bar" 
+                dataKey="performance" 
+                categoryKey="sector" 
+                color="#575757" 
+                height={200}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Research Reports */}
+        <div className="space-y-4">
+          <h3 className="text-xl font-bold text-foreground">Featured Research</h3>
+          <div className="grid gap-4">
+            {[
+              { title: "Digital Economy Growth in Sub-Saharan Africa", category: "Technology", date: "Dec 2024" },
+              { title: "Agricultural Productivity and Food Security Trends", category: "Agriculture", date: "Nov 2024" },
+              { title: "Infrastructure Investment and Economic Development", category: "Infrastructure", date: "Nov 2024" },
+            ].map((report, i) => (
+              <div 
+                key={i}
+                className="group flex items-center gap-4 p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/30 transition-all cursor-pointer shadow-sm hover:shadow-md"
+              >
+                <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <Activity className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-1 rounded border border-primary/10">
+                      {report.category}
+                    </span>
+                    <span className="text-xs text-secondary">{report.date}</span>
+                  </div>
+                  <h4 className="font-bold text-base text-foreground group-hover:text-primary transition-colors">
+                    {report.title}
+                  </h4>
+                </div>
+                <ArrowUpRight className="h-5 w-5 text-secondary group-hover:text-primary transition-colors" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  };
 
   return (
     <Dashboard activeTab={activeTab} onTabChange={setActiveTab}>
