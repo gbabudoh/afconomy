@@ -7,7 +7,7 @@ import DataChart from "@/components/DataChart";
 import { DollarSign, Activity, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2, GraduationCap, Briefcase, LucideIcon } from "lucide-react";
 import { useCountry } from "@/lib/CountryContext";
 import { africanCountries } from "@/lib/countries";
-import { countryMacroData, CountryMacro, MacroMetric } from "@/lib/macroData";
+import { countryMacroData, getMacroForCountry, CountryMacro, MacroMetric } from "@/lib/macroData";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -20,13 +20,12 @@ export default function Home() {
 
     if (selectedCountries.length === 1) {
       const code = selectedCountries[0].toUpperCase();
-      return countryMacroData[code] || countryMacroData.default;
+      return getMacroForCountry(code);
     }
 
     // Multiple countries selected - Aggregate data
     const selectedData = selectedCountries
-      .map(code => countryMacroData[code.toUpperCase()])
-      .filter(Boolean);
+      .map(code => getMacroForCountry(code.toUpperCase()));
 
     if (selectedData.length === 0) return countryMacroData.default;
 

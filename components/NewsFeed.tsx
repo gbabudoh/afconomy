@@ -3,20 +3,42 @@
 import { useMemo, useState } from "react";
 import { newsData, NewsItem } from "@/lib/newsData";
 import { useCountry } from "@/lib/CountryContext";
-import { ArrowUpRight, X, Clock, Share2, Bookmark } from "lucide-react";
+import { africanCountries } from "@/lib/countries";
+import { ArrowUpRight, X, Clock, Share2, Bookmark, Globe } from "lucide-react";
 
 export default function NewsFeed() {
   const { selectedCountries } = useCountry();
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
 
   const filteredNews = useMemo(() => {
-    // ... same filtering logic
     if (selectedCountries.length === 0) {
       return newsData.filter(item => !item.countryCode).slice(0, 5);
     }
+
     const filtered = newsData.filter(item => 
       !item.countryCode || selectedCountries.includes(item.countryCode)
     );
+
+    // If no specific news for selected countries, add regional news
+    if (filtered.length <= 1) { // Only global or empty
+      const selectedRegions = Array.from(new Set(
+        selectedCountries.map(code => 
+          africanCountries.find(c => c.code === code.toUpperCase())?.region
+        ).filter(Boolean)
+      ));
+      
+      selectedRegions.forEach(region => {
+        filtered.push({
+          id: `reg-${region}`,
+          title: `${region} Regional Economic Briefing`,
+          summary: `Analysis indicates consolidating growth across ${region} as member states align their fiscal policies with regional trade objectives.`,
+          category: "Macro",
+          date: "Dec 28, 2024",
+          icon: Globe
+        });
+      });
+    }
+
     return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [selectedCountries]);
 
