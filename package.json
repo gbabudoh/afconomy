@@ -4,14 +4,34 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "socket-dev": "node server/socket-server.js",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@mux/mux-video": "^0.29.2",
+    "@prisma/client": "^6.19.1",
+    "@tensorflow/tfjs": "^4.22.0",
+    "currency-converter-lt": "^2.0.1",
+    "currency.js": "^2.0.3-8c317288",
+    "dotenv": "^17.2.3",
+    "framer-motion": "^12.23.26",
+    "livekit-client": "^2.16.1",
+    "lucide-react": "^0.562.0",
     "next": "16.1.1",
+    "onnxjs": "^0.1.8",
+    "prisma": "^6.19.1",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "recharts": "^3.6.0",
+    "rxjs": "^7.8.2",
+    "shaka-player": "^4.16.12",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
+    "stdlib": "^0.6.0",
+    "tailwind-merge": "^3.4.0",
+    "video.js": "^8.23.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

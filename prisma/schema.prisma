@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  code         String   @unique // ISO 3166-1 alpha-3 (e.g., NGA, ZAF)
+  flagUrl      String?
+  region       String   // e.g., West Africa, East Africa
+  description  String?  @db.Text
+  capital      String?
+  currency     String?
+  population   BigInt?
+  gdp          Float?   // Nominal GDP in USD
+  
+  metrics      Metric[]
+  marketData   MarketData[]
+  news         News[]
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Metric {
+  id           String   @id @default(cuid())
+  name         String   // e.g., Inflation, GDP Growth, Poverty Rate
+  value        Float
+  unit         String   // e.g., %, USD, persons
+  date         DateTime // Date for the time-series record
+  
+  countryId    String
+  country      Country  @relation(fields: [countryId], references: [id])
+  
+  @@index([countryId, date])
+}
+
+model MarketData {
+  id           String   @id @default(cuid())
+  symbol       String   // e.g., NGX, JSE, USD/NGN
+  type         String   // e.g., Stock, Currency, Commodity
+  price        Float
+  change       Float?
+  changePct    Float?
+  volume       BigInt?
+  timestamp    DateTime @default(now())
+  
+  countryId    String?
+  country      Country? @relation(fields: [countryId], references: [id])
+  
+  @@index([symbol, timestamp])
+}
+
+model News {
+  id           String   @id @default(cuid())
+  title        String
+  content      String   @db.Text
+  summary      String?  @db.Text
+  url          String?
+  imageUrl     String?
+  publishedAt  DateTime @default(now())
+  
+  countryId    String?
+  country      Country? @relation(fields: [countryId], references: [id])
+  
+  category     String?  // e.g., Macro, Market, Politics, Culture
+}
+
+model Currency {
+  id           String   @id @default(cuid())
+  code         String   @unique // e.g., NGN, ZAR, KES
+  name         String   // e.g., Nigerian Naira, South African Rand
+  symbol       String   // e.g., ₦, R, KSh
+  countryCode  String   // ISO country code
+  rateToUSD    Float    // Exchange rate to USD
+  lastUpdated  DateTime @default(now())
+  
+  @@index([code])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  user      String
+  text      String
+  isAdmin   Boolean  @default(false)
+  timestamp DateTime @default(now())
+
+  @@index([timestamp])
+}
+
+model Poll {
+  id         String   @id @default(cuid())
+  question   String
+  totalVotes Int      @default(0)
+  options    PollOption[]
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+}
+
+model PollOption {
+  id      String @id @default(cuid())
+  text    String
+  votes   Int    @default(0)
+  pollId  String
+  poll    Poll   @relation(fields: [pollId], references: [id])
+}
