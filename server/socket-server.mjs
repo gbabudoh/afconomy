@@ -1,8 +1,16 @@
-/* eslint-disable */
-require('dotenv').config();
-const { createServer } = require("http");
-const { Server } = require("socket.io");
-const { PrismaClient } = require("@prisma/client");
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { PrismaClient } from "@prisma/client";
+
+// ESM equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env.local
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 const prisma = new PrismaClient();
 const httpServer = createServer();

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "socket-dev": "node server/socket-server.js",
+    "socket-dev": "node server/socket-server.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
