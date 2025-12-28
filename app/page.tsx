@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Dashboard from "@/components/Dashboard";
 import CurrencyConverter from "@/components/CurrencyConverter";
 import DataChart from "@/components/DataChart";
-import { TrendingUp, DollarSign, Activity, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2, GraduationCap, Briefcase, LucideIcon } from "lucide-react";
+import { DollarSign, Activity, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2, GraduationCap, Briefcase, LucideIcon } from "lucide-react";
 import { useCountry } from "@/lib/CountryContext";
 import { africanCountries } from "@/lib/countries";
 import { countryMacroData, CountryMacro, MacroMetric } from "@/lib/macroData";
@@ -198,34 +198,6 @@ export default function Home() {
               color="#575757" 
             />
           </div>
-        </div>
-      </div>
-
-      {/* News Section */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold text-foreground">Latest Macro Analysis</h3>
-        <div className="grid gap-4">
-          {[1, 2].map((i) => (
-            <div 
-              key={i} 
-              className="group flex gap-4 p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/30 transition-all cursor-pointer shadow-sm hover:shadow-md"
-            >
-              <div className="h-24 w-40 bg-gradient-to-br from-secondary/10 to-primary/5 rounded-lg flex-shrink-0 overflow-hidden flex items-center justify-center border border-secondary/10">
-                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center ring-4 ring-secondary/5">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-              <div className="flex-1 space-y-2">
-                <span className="inline-block text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-1 rounded border border-primary/10">Regional Report</span>
-                <h4 className="font-bold text-base leading-tight text-foreground group-hover:text-primary transition-colors">
-                  Economic recovery expected in West African trade blocks by Q3 2026
-                </h4>
-                <p className="text-sm text-secondary line-clamp-2">
-                  New data suggests that recent policy changes in major economies are beginning to yield positive results for regional stability and growth...
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </section>

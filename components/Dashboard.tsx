@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import LiveInteractions from "./LiveInteractions";
+import NewsFeed from "./NewsFeed";
 
 const TVPlayer = dynamic(() => import("./TVPlayer"), {
   ssr: false,
@@ -72,6 +73,8 @@ export default function Dashboard({ children, activeTab, onTabChange }: Dashboar
                 <button className="text-primary hover:underline font-semibold hover:text-primary/80 transition-colors">Set Reminder</button>
               </div>
             </div>
+
+            <NewsFeed />
 
             <LiveInteractions />
           </div>
