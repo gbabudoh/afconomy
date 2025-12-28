@@ -1,5 +1,5 @@
 import { TrendingUp, Users, DollarSign, Activity, LucideIcon, GraduationCap, Briefcase, BarChart3, Globe, Building2 as Building2Icon } from "lucide-react";
-import { africanCountries, Country } from "./countries";
+import { africanCountries } from "./countries";
 
 export interface MacroMetric {
   name: string;
