@@ -15,6 +15,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("overview");
   const [deepDiveCategory, setDeepDiveCategory] = useState<keyof Omit<CountryMacro, 'metrics' | 'gdpData' | 'inflationData'>>("financial");
   const [selectedResearch, setSelectedResearch] = useState<ResearchReport | null>(null);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const { selectedCountries } = useCountry();
 
   // Resolve active macro data
@@ -224,7 +225,8 @@ export default function Home() {
           {activeNews.map((news: NewsItem) => (
             <div 
               key={news.id}
-              className="group p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/20 transition-all shadow-sm hover:shadow-md cursor-default"
+              onClick={() => setSelectedNews(news)}
+              className="group p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/20 transition-all shadow-sm hover:shadow-md cursor-pointer"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -250,6 +252,107 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* News Detail Modal (Overview Specific) */}
+      {selectedNews && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div 
+            className="relative w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-6 border-b border-border flex items-center justify-between bg-secondary/5 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10">
+                  <selectedNews.icon className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+                    Economic Update
+                  </span>
+                  <div className="flex items-center gap-2 text-xs text-secondary mt-0.5">
+                    <Clock className="h-3.5 w-3.5" />
+                    Published {selectedNews.date}
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={() => setSelectedNews(null)}
+                className="p-2 hover:bg-secondary/10 rounded-full transition-colors"
+              >
+                <X className="h-5 w-5 text-secondary" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-8 overflow-y-auto no-scrollbar space-y-8">
+              <div className="space-y-3">
+                <span className="text-xs font-bold text-primary bg-primary/5 px-2.5 py-1 rounded-full uppercase tracking-tight">
+                  {selectedNews.category} Report
+                </span>
+                <h2 className="text-3xl font-bold text-foreground leading-tight">
+                  {selectedNews.title}
+                </h2>
+              </div>
+
+              <div className="space-y-6 text-secondary leading-relaxed text-lg">
+                <p className="font-medium text-foreground/80 italic border-l-4 border-primary/30 pl-6 py-2 bg-primary/[0.02]">
+                  {selectedNews.summary}
+                </p>
+                
+                {selectedNews.fullContent ? (
+                  <div className="space-y-6 text-base text-foreground/90">
+                    {selectedNews.fullContent.split('\n\n').map((para: string, idx: number) => {
+                      const cleanPara = para.trim();
+                      if (cleanPara.startsWith('# ')) return null;
+                      if (cleanPara.startsWith('## ')) {
+                        return (
+                          <h3 key={idx} className="text-xl font-bold text-foreground pt-4 mb-2">
+                            {cleanPara.replace('## ', '')}
+                          </h3>
+                        );
+                      }
+                      if (cleanPara.includes('- **')) {
+                        return (
+                          <ul key={idx} className="space-y-3">
+                            {cleanPara.split('\n').map((li: string, lidx: number) => (
+                              <li key={lidx} className="flex gap-2">
+                                <div className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                                <span dangerouslySetInnerHTML={{ __html: li.trim().replace('- **', '<b>').replace('**: ', '</b>: ') }} />
+                              </li>
+                            ))}
+                          </ul>
+                        );
+                      }
+                      return <p key={idx}>{cleanPara}</p>;
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-base text-foreground/90">
+                    Full analysis for this report is being finalized by our economic research team. 
+                    Please check back shortly for the comprehensive breakdown and regional impact assessment.
+                  </p>
+                )}
+              </div>
+
+              {/* Footer / Actions */}
+              <div className="flex items-center gap-3 pt-8 mt-12 border-t border-border">
+                <button 
+                  onClick={() => setSelectedNews(null)}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                >
+                  Close Report
+                </button>
+                <button className="p-3 border border-border rounded-xl hover:bg-secondary/5 transition-all">
+                  <Share2 className="h-6 w-6 text-secondary" />
+                </button>
+              </div>
+            </div>
+          </div>
+          {/* Backdrop Click */}
+          <div className="absolute inset-0 -z-10" onClick={() => setSelectedNews(null)} />
+        </div>
+      )}
     </section>
   );
 

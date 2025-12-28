@@ -19,7 +19,20 @@ export const newsData: NewsItem[] = [
     summary: "New data suggests that recent policy changes in major economies are beginning to yield positive results for regional stability and growth.",
     category: "Macro",
     date: "Dec 28, 2024",
-    icon: Activity
+    icon: Activity,
+    fullContent: `
+      # Economic recovery expected in West African trade blocks by Q3 2026
+      
+      Recent economic assessments across the ECOWAS region indicate a significant shift towards fiscal stability. The recovery is underpinned by a series of aggressive monetary policies aimed at curbing inflation and stabilizing regional currencies.
+      
+      ## Key Drivers of Recovery:
+      - **Policy Harmonization**: Increased synchronization of trade policies between member states has reduced cross-border friction.
+      - **Infrastructure Investment**: New transport corridors connecting coastal hubs to landlocked regions are beginning to lower logistics costs.
+      - **Commodity Price Stabilization**: A more stable outlook for key exports like cocoa, gold, and oil is providing much-needed fiscal breathing room for governments.
+      
+      ## Regional Outlook:
+      While challenges remain, particularly regarding debt sustainability, the consensus among analysts is that the region is on a trajectory for robust growth by the second half of 2026.
+    `
   },
   {
     id: "g2",
@@ -27,7 +40,20 @@ export const newsData: NewsItem[] = [
     summary: "The implementation of the African Continental Free Trade Area has seen an 18% increase in intra-continental trade volume.",
     category: "Trade",
     date: "Dec 27, 2024",
-    icon: Globe
+    icon: Globe,
+    fullContent: `
+      # AfCFTA Progress: Intra-African trade reaches new high in 2024
+      
+      The African Continental Free Trade Area (AfCFTA) is moving from a vision to reality, with 2024 marking a pivotal year for internal trade volumes. The 18% increase in trade within the continent is the largest year-on-year jump since the agreement was signed.
+      
+      ## Major Milestones:
+      - **Digital Trade Protocols**: The finalization of protocols on digital trade has simplified electronic payments across 24 member states.
+      - **Removal of Non-Tariff Barriers**: A centralized reporting mechanism for trade barriers has led to the resolution of over 150 long-standing disputes.
+      - **Sector Growth**: Agricultural and manufactured goods have seen the highest growth rates, as local processing gains momentum.
+      
+      ## Economic Impact:
+      This surge in internal trade is estimated to have created over 1.2 million new jobs across the continent, primarily in the logistics and manufacturing sectors.
+    `
   },
   // Egypt (EGY)
   {
