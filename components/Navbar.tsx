@@ -5,12 +5,10 @@ import Image from "next/image";
 import { Search, Menu, Bell } from "lucide-react";
 import CountryFilter from "./CountryFilter";
 
-interface NavbarProps {
-  selectedCountries: string[];
-  onCountriesChange: (countries: string[]) => void;
-}
+import { useCountry } from "@/lib/CountryContext";
 
-export default function Navbar({ selectedCountries, onCountriesChange }: NavbarProps) {
+export default function Navbar() {
+  const { selectedCountries, setSelectedCountries } = useCountry();
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-card backdrop-blur-md shadow-sm">
       <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -43,7 +41,7 @@ export default function Navbar({ selectedCountries, onCountriesChange }: NavbarP
         <div className="flex items-center gap-3">
           <CountryFilter 
             selectedCountries={selectedCountries}
-            onCountriesChange={onCountriesChange}
+            onCountriesChange={setSelectedCountries}
           />
           <button className="rounded-lg p-2 hover:bg-secondary/10 transition-colors relative group">
             <Bell className="h-5 w-5 text-secondary group-hover:text-primary transition-colors" />

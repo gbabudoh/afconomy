@@ -5,27 +5,32 @@ import Dashboard from "@/components/Dashboard";
 import CurrencyConverter from "@/components/CurrencyConverter";
 import DataChart from "@/components/DataChart";
 import { TrendingUp, Users, DollarSign, Activity, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2 } from "lucide-react";
+import { useCountry } from "@/lib/CountryContext";
+import { africanCountries } from "@/lib/countries";
+import { countryMacroData } from "@/lib/macroData";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("overview");
+  const { selectedCountries } = useCountry();
 
-  const gdpData = [
-    { year: "2019", growth: 3.4 },
-    { year: "2020", growth: -2.1 },
-    { year: "2021", growth: 4.5 },
-    { year: "2022", growth: 3.8 },
-    { year: "2023", growth: 3.2 },
-    { year: "2024", growth: 3.6 },
-  ];
+  // Resolve active macro data
+  // If exactly one country is selected and we have data for it, use it. Otherwise default.
+  const activeDataKey = selectedCountries.length === 1 && countryMacroData[selectedCountries[0]] 
+    ? selectedCountries[0] 
+    : "default";
+  
+  const activeMacro = countryMacroData[activeDataKey];
 
-  const inflationData = [
-    { year: "2019", rate: 8.5 },
-    { year: "2020", rate: 10.2 },
-    { year: "2021", rate: 9.8 },
-    { year: "2022", rate: 14.5 },
-    { year: "2023", rate: 12.8 },
-    { year: "2024", rate: 11.5 },
-  ];
+  // Helper to check if a country is selected (for filtering lists like markets/currencies)
+  const isSelected = (countryName: string) => {
+    if (selectedCountries.length === 0) return true;
+    const country = africanCountries.find(c => c.name === countryName);
+    return country ? selectedCountries.includes(country.code) : false;
+  };
+
+  const gdpData = activeMacro.gdpData;
+  const inflationData = activeMacro.inflationData;
+  const macroMetrics = activeMacro.metrics;
 
   const regionalTradeData = [
     { year: "2019", growth: 12.1 },
@@ -43,33 +48,29 @@ export default function Home() {
     { sector: "Manuf", performance: 15.4 },
     { sector: "Finance", performance: 20.1 },
   ];
-  const macroMetrics = [
-    { name: "GDP Growth", value: "3.2%", trend: "+0.4%", icon: TrendingUp, color: "text-emerald-600" },
-    { name: "Inflation Rate", value: "12.8%", trend: "-1.2%", icon: Activity, color: "text-primary" },
-    { name: "Population", value: "1.4B", trend: "+2.1%", icon: Users, color: "text-blue-600" },
-    { name: "Trade Balance", value: "+$4.2B", trend: "+$0.8B", icon: DollarSign, color: "text-emerald-600" },
-  ];
 
   const marketData = [
     { name: "NGX All-Share", value: "52,340.12", change: "+2.4%", isUp: true, country: "Nigeria" },
     { name: "JSE Top 40", value: "68,234.50", change: "-0.8%", isUp: false, country: "South Africa" },
     { name: "NSE 20", value: "1,845.23", change: "+1.2%", isUp: true, country: "Kenya" },
     { name: "EGX 30", value: "18,456.78", change: "+0.5%", isUp: true, country: "Egypt" },
-  ];
+  ].filter(market => isSelected(market.country));
 
   const currencies = [
-    { pair: "USD/NGN", rate: "1,485.50", change: "+0.3%", isUp: true },
-    { pair: "USD/ZAR", rate: "18.45", change: "-0.2%", isUp: false },
-    { pair: "USD/KES", rate: "128.30", change: "+0.1%", isUp: true },
-    { pair: "USD/EGP", rate: "30.85", change: "+0.4%", isUp: true },
-  ];
+    { pair: "USD/NGN", rate: "1,485.50", change: "+0.3%", isUp: true, country: "Nigeria" },
+    { pair: "USD/ZAR", rate: "18.45", change: "-0.2%", isUp: false, country: "South Africa" },
+    { pair: "USD/KES", rate: "128.30", change: "+0.1%", isUp: true, country: "Kenya" },
+    { pair: "USD/EGP", rate: "30.85", change: "+0.4%", isUp: true, country: "Egypt" },
+  ].filter(curr => isSelected(curr.country));
 
   const renderOverview = () => (
     <section className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">Macro Engine</h2>
-        <p className="text-base text-secondary">Key economic indicators across the African continent</p>
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">
+          Macro Engine{selectedCountries.length === 1 ? `: ${africanCountries.find(c => c.code === selectedCountries[0])?.name}` : selectedCountries.length > 1 ? ` (${selectedCountries.length} Countries)` : ""}
+        </h2>
+        <p className="text-base text-secondary">Key economic indicators {selectedCountries.length > 0 ? "for selected regions" : "across the African continent"}</p>
       </div>
 
       {/* Metrics Grid */}
