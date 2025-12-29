@@ -93,7 +93,28 @@ model ChatMessage {
   isAdmin   Boolean  @default(false)
   timestamp DateTime @default(now())
 
+  userId    String?
+  author    User?    @relation(fields: [userId], references: [id])
+
   @@index([timestamp])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String?
+  avatarUrl     String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  messages      ChatMessage[]
 }
 
 model Poll {
@@ -111,4 +132,21 @@ model PollOption {
   votes   Int    @default(0)
   pollId  String
   poll    Poll   @relation(fields: [pollId], references: [id])
+}
+
+enum StreamType {
+  LIVE
+  PRE_RECORDED
+}
+
+model Stream {
+  id           String     @id @default(cuid())
+  title        String
+  description  String?    @db.Text
+  url          String     // URL to the stream or video file
+  thumbnailUrl String?
+  type         StreamType @default(LIVE)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }

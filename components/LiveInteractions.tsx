@@ -31,11 +31,22 @@ export default function LiveInteractions() {
   const [newMsg, setNewMsg] = useState("");
   const [poll, setPoll] = useState<Poll | null>(null);
   const [hasVoted, setHasVoted] = useState(false);
+  const [user, setUser] = useState<{ id: string; name: string } | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(true);
   const socketRef = useRef<Socket | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Initialize Socket and fetch data
   useEffect(() => {
+    // Fetch User Session
+    fetch("/api/auth/session")
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) setUser(data.user);
+      })
+      .catch(() => setUser(null));
+
     // 1. Fetch Chat History
     fetch("/api/chat/history")
       .then(res => res.json())
@@ -49,7 +60,24 @@ export default function LiveInteractions() {
       .catch(err => console.error("Error fetching poll status:", err));
 
     // 3. Connect Socket
-    socketRef.current = io("http://localhost:3001");
+    socketRef.current = io("http://localhost:3001", {
+      reconnectionAttempts: 5,
+      reconnectionDelay: 2000,
+    });
+
+    socketRef.current.on("connect", () => {
+      setIsConnected(true);
+      setIsConnecting(false);
+    });
+
+    socketRef.current.on("disconnect", () => {
+      setIsConnected(false);
+    });
+
+    socketRef.current.on("connect_error", () => {
+      setIsConnecting(false);
+      setIsConnected(false);
+    });
 
     socketRef.current.on("receive-message", (message: Message) => {
       setMessages(prev => [...prev, message]);
@@ -70,9 +98,10 @@ export default function LiveInteractions() {
     if (!newMsg.trim() || !socketRef.current) return;
 
     socketRef.current.emit("send-message", {
-      user: "Guest", // For now, could be dynamic later
+      user: user ? user.name : "Guest",
       text: newMsg,
-      isAdmin: false
+      isAdmin: false,
+      userId: user ? user.id : null
     });
 
     setNewMsg("");
@@ -103,25 +132,47 @@ export default function LiveInteractions() {
   return (
     <div className="flex flex-col h-full bg-card rounded-xl border border-border overflow-hidden shadow-sm">
       {/* Tabs */}
-      <div className="flex border-b border-border p-1 bg-secondary/5">
-        <button
-          onClick={() => setActiveTab("chat")}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold transition-all rounded-md ${
-            activeTab === "chat" ? "bg-card text-primary shadow-sm ring-1 ring-border" : "text-secondary hover:text-foreground"
-          }`}
-        >
-          <MessageCircle className="h-4 w-4" />
-          CHAT
-        </button>
-        <button
-          onClick={() => setActiveTab("polls")}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold transition-all rounded-md ${
-            activeTab === "polls" ? "bg-card text-primary shadow-sm ring-1 ring-border" : "text-secondary hover:text-foreground"
-          }`}
-        >
-          <BarChart2 className="h-4 w-4" />
-          POLLS
-        </button>
+      <div className="flex items-center border-b border-border p-1 bg-secondary/5">
+        <div className="flex flex-1 gap-1">
+          <button
+            onClick={() => setActiveTab("chat")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold transition-all rounded-md ${
+              activeTab === "chat" ? "bg-card text-primary shadow-sm ring-1 ring-border" : "text-secondary hover:text-foreground"
+            }`}
+          >
+            <MessageCircle className="h-4 w-4" />
+            CHAT
+          </button>
+          <button
+            onClick={() => setActiveTab("polls")}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold transition-all rounded-md ${
+              activeTab === "polls" ? "bg-card text-primary shadow-sm ring-1 ring-border" : "text-secondary hover:text-foreground"
+            }`}
+          >
+            <BarChart2 className="h-4 w-4" />
+            POLLS
+          </button>
+        </div>
+        
+        {/* Connection Status */}
+        <div className="px-3 flex items-center gap-2">
+           {isConnecting ? (
+              <div className="flex items-center gap-1.5 grayscale opacity-50">
+                 <div className="h-1 w-1 rounded-full bg-slate-400 animate-pulse" />
+                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">Syncing...</span>
+              </div>
+           ) : isConnected ? (
+              <div className="flex items-center gap-1.5">
+                 <div className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                 <span className="text-[9px] font-black text-emerald-600 uppercase tracking-tighter">Live</span>
+              </div>
+           ) : (
+              <div className="flex items-center gap-1.5 opacity-60">
+                 <div className="h-1 w-1 rounded-full bg-red-500" />
+                 <span className="text-[9px] font-black text-red-600 uppercase tracking-tighter">Offline</span>
+              </div>
+           )}
+        </div>
       </div>
 
       {/* Content Area */}

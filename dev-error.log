@@ -1,0 +1,9 @@
+E:\APPLICATIONS\applications\applications\afconomy\node_modules\.pnpm\next@14.2.18_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\server\config.js:800
+            throw new Error(`Configuring Next.js via '${(0, _path.basename)(nonJsPath)}' is not supported. Please replace the file with 'next.config.js' or 'next.config.mjs'.`);
+                  ^
+
+Error: Configuring Next.js via 'next.config.ts' is not supported. Please replace the file with 'next.config.js' or 'next.config.mjs'.
+    at loadConfig (E:\APPLICATIONS\applications\applications\afconomy\node_modules\.pnpm\next@14.2.18_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\server\config.js:800:19)
+    at async Module.nextDev (E:\APPLICATIONS\applications\applications\afconomy\node_modules\.pnpm\next@14.2.18_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\cli\next-dev.js:175:14)
+
+Node.js v22.17.0

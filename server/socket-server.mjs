@@ -31,6 +31,7 @@ io.on("connection", (socket) => {
           user: data.user,
           text: data.text,
           isAdmin: data.isAdmin || false,
+          userId: data.userId || null,
         },
       });
       console.log("Message saved:", message.text);
