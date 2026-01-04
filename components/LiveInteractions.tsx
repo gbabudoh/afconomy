@@ -88,9 +88,13 @@ export default function LiveInteractions() {
     };
   }, []);
 
-  // Auto-scroll chat
+  // Auto-scroll chat only when new messages arrive (not on initial load)
+  const prevMessagesCount = useRef(0);
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > prevMessagesCount.current && prevMessagesCount.current > 0) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevMessagesCount.current = messages.length;
   }, [messages]);
 
   const handleSend = (e: React.FormEvent) => {

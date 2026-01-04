@@ -146,23 +146,23 @@ export default function Home() {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {macroMetrics.map((metric: MacroMetric) => (
           <div 
             key={metric.name} 
-            className="group relative overflow-hidden rounded-xl border border-secondary/10 bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/20 hover:bg-secondary/5"
+            className="group relative overflow-hidden rounded-xl border border-secondary/10 bg-card p-4 sm:p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/20 hover:bg-secondary/5"
           >
-            <div className="flex items-start justify-between mb-4">
-              <div className={`p-3 rounded-lg bg-secondary/5 transition-colors group-hover:bg-primary/5`}>
-                <metric.icon className={`h-5 w-5 ${metric.color} transition-transform group-hover:scale-110`} />
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
+              <div className={`p-2 sm:p-3 rounded-lg bg-secondary/5 transition-colors group-hover:bg-primary/5`}>
+                <metric.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${metric.color} transition-transform group-hover:scale-110`} />
               </div>
               <span className={`text-xs font-bold px-2 py-1 rounded-full ${metric.trend.startsWith('+') ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
                 {metric.trend}
               </span>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-secondary">{metric.name}</p>
-              <h3 className="text-3xl font-bold text-foreground">{metric.value}</h3>
+              <p className="text-xs sm:text-sm font-medium text-secondary">{metric.name}</p>
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground">{metric.value}</h3>
             </div>
             <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
@@ -170,17 +170,17 @@ export default function Home() {
       </div>
 
       {/* Charts Section */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all hover:border-secondary/20">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-foreground">GDP Growth Historical</h3>
-            <select className="text-xs font-medium text-secondary bg-secondary/5 border border-secondary/20 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+        <div className="rounded-xl border border-secondary/10 bg-card p-4 sm:p-6 shadow-sm hover:shadow-md transition-all hover:border-secondary/20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-foreground">GDP Growth Historical</h3>
+            <select className="text-xs font-medium text-secondary bg-secondary/5 border border-secondary/20 rounded-lg px-2 sm:px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
               <option>Last 12 months</option>
               <option>Last 5 years</option>
               <option>All time</option>
             </select>
           </div>
-          <div className="h-[300px]">
+          <div className="h-[200px] sm:h-[300px]">
             <DataChart 
               data={gdpData} 
               type="bar" 
@@ -191,16 +191,16 @@ export default function Home() {
           </div>
         </div>
         
-        <div className="rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all hover:border-secondary/20">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-foreground">Inflation Trends</h3>
-            <select className="text-xs font-medium text-secondary bg-secondary/5 border border-secondary/20 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
+        <div className="rounded-xl border border-secondary/10 bg-card p-4 sm:p-6 shadow-sm hover:shadow-md transition-all hover:border-secondary/20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-foreground">Inflation Trends</h3>
+            <select className="text-xs font-medium text-secondary bg-secondary/5 border border-secondary/20 rounded-lg px-2 sm:px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
               <option>Last 12 months</option>
               <option>Last 5 years</option>
               <option>All time</option>
             </select>
           </div>
-          <div className="h-[300px]">
+          <div className="h-[200px] sm:h-[300px]">
             <DataChart 
               data={inflationData} 
               type="area" 
@@ -221,32 +221,32 @@ export default function Home() {
           </span>
         </div>
         
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
           {activeNews.map((news: NewsItem) => (
             <div 
               key={news.id}
               onClick={() => setSelectedNews(news)}
-              className="group p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/20 transition-all shadow-sm hover:shadow-md cursor-pointer"
+              className="group p-4 sm:p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/20 transition-all shadow-sm hover:shadow-md cursor-pointer"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                  <news.icon className="h-5 w-5 text-primary" />
+                  <news.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
                 <span className="text-[10px] font-bold text-secondary uppercase tracking-tight">
                   {news.date}
                 </span>
               </div>
-              <h4 className="font-bold text-base text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+              <h4 className="font-bold text-sm sm:text-base text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                 {news.title}
               </h4>
               <p className="text-xs text-secondary leading-relaxed line-clamp-3">
                 {news.summary}
               </p>
-              <div className="mt-4 pt-4 border-t border-secondary/5 flex items-center justify-between">
+              <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-secondary/5 flex items-center justify-between">
                 <span className="text-[10px] font-bold text-primary px-1.5 py-0.5 rounded bg-primary/5">
                   {news.category}
                 </span>
-                <ArrowUpRight className="h-4 w-4 text-secondary group-hover:text-primary transition-all opacity-0 group-hover:opacity-100" />
+                <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 text-secondary group-hover:text-primary transition-all opacity-0 group-hover:opacity-100" />
               </div>
             </div>
           ))}
@@ -466,71 +466,76 @@ export default function Home() {
     const activeMetrics = activeMacro[deepDiveCategory] as MacroMetric[];
 
     return (
-      <section className="space-y-8">
+      <section className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground">Deep Dive Analysis</h2>
-            <p className="text-base text-secondary">Specialized economic indicators and regional performance</p>
+        <div className="space-y-4">
+          <div className="space-y-1 sm:space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Deep Dive Analysis</h2>
+            <p className="text-sm sm:text-base text-secondary">Specialized economic indicators and regional performance</p>
           </div>
           
-          {/* Category Tabs */}
-          <div className="flex bg-secondary/5 p-1 rounded-xl border border-secondary/10 overflow-x-auto no-scrollbar">
-            {categories.map((cat) => (
-              <button
-                key={cat.key}
-                onClick={() => setDeepDiveCategory(cat.key)}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg transition-all whitespace-nowrap ${
-                  deepDiveCategory === cat.key 
-                    ? "bg-card text-primary shadow-sm ring-1 ring-border" 
-                    : "text-secondary hover:text-foreground hover:bg-secondary/5"
-                }`}
-              >
-                <cat.icon className="h-4 w-4" />
-                {cat.label}
-              </button>
-            ))}
+          {/* Category Tabs - Improved mobile scrolling */}
+          <div className="relative -mx-4 sm:mx-0 px-4 sm:px-0">
+            <div className="flex gap-2 sm:gap-1 pb-2 sm:pb-0 overflow-x-auto no-scrollbar sm:flex-wrap sm:bg-secondary/5 sm:p-1 sm:rounded-xl sm:border sm:border-secondary/10">
+              {categories.map((cat) => (
+                <button
+                  key={cat.key}
+                  onClick={() => setDeepDiveCategory(cat.key)}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2 text-xs sm:text-sm font-bold rounded-lg sm:rounded-lg transition-all whitespace-nowrap flex-shrink-0 ${
+                    deepDiveCategory === cat.key 
+                      ? "bg-primary text-primary-foreground sm:bg-card sm:text-primary shadow-sm sm:ring-1 sm:ring-border" 
+                      : "bg-secondary/10 text-secondary hover:text-foreground hover:bg-secondary/20 sm:bg-transparent sm:hover:bg-secondary/5"
+                  }`}
+                >
+                  <cat.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span className="hidden xs:inline sm:inline">{cat.label}</span>
+                  <span className="xs:hidden sm:hidden">{cat.label.slice(0, 4)}</span>
+                </button>
+              ))}
+            </div>
+            {/* Scroll indicator for mobile */}
+            <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none sm:hidden" />
           </div>
         </div>
 
         {/* Specialized Metrics Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {activeMetrics.map((metric) => (
             <div 
               key={metric.name}
-              className="group rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all hover:border-primary/20"
+              className="group rounded-xl border border-secondary/10 bg-card p-4 sm:p-6 shadow-sm hover:shadow-md transition-all hover:border-primary/20"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 rounded-lg bg-secondary/5 group-hover:bg-primary/5 transition-colors">
-                  <metric.icon className={`h-5 w-5 ${metric.color}`} />
+              <div className="flex items-start justify-between mb-3 sm:mb-4">
+                <div className="p-2 sm:p-3 rounded-lg bg-secondary/5 group-hover:bg-primary/5 transition-colors">
+                  <metric.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${metric.color}`} />
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-secondary bg-secondary/5 px-2 py-1 rounded">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-secondary bg-secondary/5 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                   {metric.trend}
                 </span>
               </div>
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-secondary">{metric.name}</p>
-                <h3 className="text-2xl font-bold text-foreground">{metric.value}</h3>
+              <div className="space-y-0.5 sm:space-y-1">
+                <p className="text-xs sm:text-sm font-medium text-secondary">{metric.name}</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground">{metric.value}</h3>
               </div>
             </div>
           ))}
         </div>
 
         {/* Existing Analysis Charts */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="p-3 rounded-lg bg-primary/10">
-                <Globe className="h-6 w-6 text-primary" />
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+          <div className="rounded-xl border border-secondary/10 bg-card p-4 sm:p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+              <div className="p-2 sm:p-3 rounded-lg bg-primary/10">
+                <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-foreground mb-2">Regional Trade Analysis</h3>
-                <p className="text-sm text-secondary">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base sm:text-lg font-bold text-foreground mb-1 sm:mb-2">Regional Trade Analysis</h3>
+                <p className="text-xs sm:text-sm text-secondary line-clamp-2">
                   Examining intra-African trade patterns and the impact of AfCFTA on regional economies.
                 </p>
               </div>
             </div>
-            <div className="h-[200px]">
+            <div className="h-[160px] sm:h-[200px]">
               <DataChart 
                 data={regionalTradeData} 
                 type="area" 
@@ -542,19 +547,19 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-secondary/10 bg-card p-6 shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="p-3 rounded-lg bg-primary/10">
-                <Building2 className="h-6 w-6 text-primary" />
+          <div className="rounded-xl border border-secondary/10 bg-card p-4 sm:p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+              <div className="p-2 sm:p-3 rounded-lg bg-primary/10">
+                <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-foreground mb-2">Sector Performance</h3>
-                <p className="text-sm text-secondary">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base sm:text-lg font-bold text-foreground mb-1 sm:mb-2">Sector Performance</h3>
+                <p className="text-xs sm:text-sm text-secondary line-clamp-2">
                   Deep analysis of key sectors including technology, agriculture, and manufacturing.
                 </p>
               </div>
             </div>
-            <div className="h-[200px]">
+            <div className="h-[160px] sm:h-[200px]">
               <DataChart 
                 data={sectorPerformanceData} 
                 type="bar" 
@@ -567,30 +572,30 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-xl font-bold text-foreground">Featured Research</h3>
-          <div className="grid gap-4">
+        <div className="space-y-3 sm:space-y-4">
+          <h3 className="text-lg sm:text-xl font-bold text-foreground">Featured Research</h3>
+          <div className="grid gap-3 sm:gap-4">
             {researchReports.map((report) => (
               <div 
                 key={report.id}
                 onClick={() => setSelectedResearch(report)}
-                className="group flex items-center gap-4 p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/30 transition-all cursor-pointer shadow-sm hover:shadow-md"
+                className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/30 transition-all cursor-pointer shadow-sm hover:shadow-md"
               >
-                <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                  <report.icon className="h-6 w-6 text-primary" />
+                <div className="p-2 sm:p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors flex-shrink-0">
+                  <report.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-2 py-1 rounded border border-primary/10">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded border border-primary/10">
                       {report.category}
                     </span>
-                    <span className="text-xs text-secondary">{report.date}</span>
+                    <span className="text-[10px] sm:text-xs text-secondary">{report.date}</span>
                   </div>
-                  <h4 className="font-bold text-base text-foreground group-hover:text-primary transition-colors">
+                  <h4 className="font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-2">
                     {report.title}
                   </h4>
                 </div>
-                <ArrowUpRight className="h-5 w-5 text-secondary group-hover:text-primary transition-colors" />
+                <ArrowUpRight className="h-4 w-4 sm:h-5 sm:w-5 text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
               </div>
             ))}
           </div>
