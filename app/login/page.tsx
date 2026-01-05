@@ -48,7 +48,7 @@ export default function LoginPage() {
 
       {/* Left Side: Branding/Intro (Desktop only) */}
       <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 relative z-10 bg-secondary/5 border-r border-border">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 cursor-pointer">
           <Image src="/logo.png" alt="Afconomy" width={160} height={40} className="h-10 w-auto" />
         </Link>
         
@@ -113,7 +113,7 @@ export default function LoginPage() {
                   <label className="text-xs font-bold text-secondary uppercase tracking-widest font-mono">
                     Password
                   </label>
-                  <button type="button" className="text-xs font-bold text-primary hover:underline">
+                  <button type="button" className="text-xs font-bold text-primary hover:underline cursor-pointer">
                     Forgot Password?
                   </button>
                 </div>
@@ -134,7 +134,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 bg-primary text-primary-foreground rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-50"
+              className="w-full h-12 bg-primary text-primary-foreground rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -149,7 +149,7 @@ export default function LoginPage() {
           <div className="text-center">
             <p className="text-sm text-secondary font-medium">
               Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-primary font-bold hover:underline">
+              <Link href="/register" className="text-primary font-bold hover:underline cursor-pointer">
                 Register Platform
               </Link>
             </p>

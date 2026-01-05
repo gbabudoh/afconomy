@@ -100,7 +100,7 @@ export default function ChatModeration() {
         <div className="flex items-center gap-2">
            <button 
              onClick={fetchMessages}
-             className="p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-slate-500"
+             className="p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-slate-500 cursor-pointer"
              title="Synchronize Logs"
            >
              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
@@ -188,7 +188,7 @@ export default function ChatModeration() {
                          {!msg.isAdmin && (
                             <button 
                               onClick={() => handleDelete(msg.id)}
-                              className="h-9 w-9 flex items-center justify-center rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm"
+                              className="h-9 w-9 flex items-center justify-center rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm cursor-pointer"
                             >
                                <Trash2 className="h-4 w-4" />
                             </button>
@@ -210,14 +210,14 @@ export default function ChatModeration() {
               <button 
                 disabled={page === 1}
                 onClick={() => setPage(p => p - 1)}
-                className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50 disabled:opacity-20 disabled:pointer-events-none transition-all text-slate-500"
+                className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50 disabled:opacity-20 disabled:pointer-events-none transition-all text-slate-500 cursor-pointer"
               >
                  Prev Area
               </button>
               <button 
                 disabled={page === totalPages}
                 onClick={() => setPage(p => p + 1)}
-                className="px-4 py-2 bg-primary text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 disabled:opacity-20 disabled:pointer-events-none transition-all shadow-[0_4px_15px_rgba(234,179,8,0.2)]"
+                className="px-4 py-2 bg-primary text-white rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 disabled:opacity-20 disabled:pointer-events-none transition-all shadow-[0_4px_15px_rgba(234,179,8,0.2)] cursor-pointer"
               >
                  Next Area
               </button>

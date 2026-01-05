@@ -64,7 +64,7 @@ export default function AdminDashboard() {
             <div className="h-2 w-2 bg-white rounded-full animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.4)]"></div>
             <span className="text-xs font-bold text-white uppercase tracking-tighter">Production Node Active</span>
           </div>
-          <button className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-white hover:bg-slate-800 transition-all flex items-center gap-2">
+          <button className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-white hover:bg-slate-800 transition-all flex items-center gap-2 cursor-pointer">
             <Server className="h-4 w-4 text-primary" />
             Clear System Cache
           </button>
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   
-                  <button className="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95">
+                  <button className="w-full py-4 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 cursor-pointer">
                     Generate New Session Keys
                   </button>
                 </div>
@@ -167,7 +167,7 @@ export default function AdminDashboard() {
                 <Server className="h-5 w-5 text-primary" />
                 Infrastructure Monitoring
               </h2>
-              <button className="text-[10px] font-black text-primary hover:text-primary/80 uppercase tracking-widest underline underline-offset-4 decoration-2 decoration-primary/20">
+              <button className="text-[10px] font-black text-primary hover:text-primary/80 uppercase tracking-widest underline underline-offset-4 decoration-2 decoration-primary/20 cursor-pointer">
                 View Detailed Logs
               </button>
             </div>

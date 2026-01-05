@@ -142,7 +142,7 @@ export default function DataTerminal() {
         </div>
         <button 
           onClick={() => setIsEditorOpen(!isEditorOpen)}
-          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95"
+          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95 cursor-pointer"
         >
           <Zap className="h-4 w-4" />
           {isEditorOpen ? "Cancel Injection" : "Inject Data Point"}
@@ -184,7 +184,7 @@ export default function DataTerminal() {
                   </h2>
                   <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Sovereign Indicator Management</p>
                 </div>
-                <button onClick={() => setIsEditorOpen(false)} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm">
+                <button onClick={() => setIsEditorOpen(false)} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm cursor-pointer">
                     <X className="h-5 w-5" />
                 </button>
             </div>
@@ -270,7 +270,7 @@ export default function DataTerminal() {
 
                     <button 
                         type="submit" 
-                        className="w-full lg:w-64 py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95"
+                        className="w-full lg:w-64 py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95 cursor-pointer"
                     >
                         <Save className="h-4 w-4" />
                         Commit Data Point
@@ -381,7 +381,7 @@ export default function DataTerminal() {
                           <td className="px-8 py-6 text-right">
                              <button 
                                onClick={() => handleDelete(item.id)}
-                               className="p-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all shadow-sm"
+                               className="p-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all shadow-sm cursor-pointer"
                                title="Purge Signal"
                              >
                                 <Trash2 className="h-4 w-4" />

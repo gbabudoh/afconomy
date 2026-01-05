@@ -12,6 +12,7 @@ import { useCountry } from "@/lib/CountryContext";
 export default function Navbar() {
   const { selectedCountries, setSelectedCountries } = useCountry();
   const [user, setUser] = useState<{ name: string; email: string; id: string; role: string } | null>(null);
+  const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
@@ -21,7 +22,8 @@ export default function Navbar() {
       .then((data) => {
         if (data.user) setUser(data.user);
       })
-      .catch(() => setUser(null));
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleLogout = async () => {
@@ -81,14 +83,16 @@ export default function Navbar() {
             <NotificationCenter />
             <div className="h-4 sm:h-6 w-px bg-border hidden sm:block"></div>
             
-            {user ? (
+            {loading ? (
+              <div className="h-9 sm:h-10 w-24 bg-primary/5 rounded-lg animate-pulse" />
+            ) : user ? (
               <div className="hidden sm:flex items-center gap-2 sm:gap-3 pl-2">
                 <div className="flex flex-col items-end hidden md:flex">
                   <span className="text-xs font-bold text-foreground">{user.name}</span>
                   <span className="text-[10px] text-secondary font-medium">Institutional Access</span>
                 </div>
                 <div className="group relative">
-                  <button className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-all text-primary">
+                  <button className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-all text-primary cursor-pointer">
                     <User className="h-4 w-4 sm:h-5 sm:w-5" />
                   </button>
                   <div className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
@@ -113,7 +117,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link href="/login" className="hidden sm:block">
-                <button className="rounded-lg bg-primary px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-all shadow-sm hover:shadow-md active:scale-95">
+                <button className="rounded-lg bg-primary px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer">
                   Sign In
                 </button>
               </Link>
@@ -189,7 +193,7 @@ export default function Navbar() {
               <Link 
                 href="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary/10 transition-colors"
+                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary/10 transition-colors cursor-pointer"
               >
                 <TrendingUp className="h-5 w-5 text-primary" />
                 <span className="text-sm font-medium text-foreground">Dashboard</span>
@@ -198,7 +202,7 @@ export default function Navbar() {
               <Link 
                 href="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary/10 transition-colors"
+                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary/10 transition-colors cursor-pointer"
               >
                 <BarChart3 className="h-5 w-5 text-secondary" />
                 <span className="text-sm font-medium text-foreground">Markets</span>
@@ -207,7 +211,7 @@ export default function Navbar() {
               <Link 
                 href="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary/10 transition-colors"
+                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary/10 transition-colors cursor-pointer"
               >
                 <Globe className="h-5 w-5 text-secondary" />
                 <span className="text-sm font-medium text-foreground">Analysis</span>

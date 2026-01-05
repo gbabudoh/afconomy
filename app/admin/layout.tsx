@@ -25,6 +25,7 @@ import {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<{ name: string; email: string; role: string } | null>(null);
@@ -61,6 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Economic Data", icon: BarChart3, path: "/admin/data" },
     { name: "Financial Assets", icon: CreditCard, path: "/admin/financials" },
     { name: "News Management", icon: Newspaper, path: "/admin/news" },
+    { name: "Research Intelligence", icon: BarChart3, path: "/admin/research" },
     { name: "TV Broadcast", icon: Tv, path: "/admin/tv" },
     { name: "Polls", icon: BarChart3, path: "/admin/polls" },
     { name: "Live Chat", icon: MessageSquare, path: "/admin/chat" },
@@ -76,15 +78,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         } bg-[#DCDCDC] border-r border-slate-200 flex flex-col transition-all duration-300 z-50`}
       >
         <div className="h-16 flex items-center px-6 border-b border-slate-200">
-          <Link href="/admin" className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
             <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
               <Shield className="h-5 w-5 text-white" />
             </div>
             {isSidebarOpen && <span className="font-bold text-lg tracking-tight">Admin<span className="text-primary">CP</span></span>}
-          </Link>
+          </div>
         </div>
 
-        <nav className="flex-1 py-6 px-3 space-y-1">
+        <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto no-scrollbar">
           {menuItems.map((item) => (
             <Link
               key={item.name}
@@ -102,7 +104,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ))}
         </nav>
 
-        <div className="p-4 border-t border-slate-200">
+        <div className="p-4 border-t border-slate-200 space-y-3">
+          {isSidebarOpen && user && (
+            <div className="px-3 py-2 bg-white/50 rounded-xl">
+              <p className="text-xs font-bold text-slate-900 truncate">{user.name || user.email.split('@')[0]}</p>
+              <p className="text-[10px] text-primary font-bold uppercase tracking-wider">Admin</p>
+            </div>
+          )}
           <button 
             onClick={handleLogout}
             className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 hover:bg-red-50 hover:text-red-600 transition-all cursor-pointer`}
@@ -137,24 +145,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-4">
             <Link 
               href="/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all text-xs font-bold border border-slate-200 group"
             >
               <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
               Main Site
             </Link>
-            <button className="relative p-2 text-slate-500 hover:text-slate-900 transition-colors">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 h-2 w-2 bg-primary rounded-full border-2 border-white"></span>
-            </button>
-            <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-slate-900">{user ? (user.name || user.email.split('@')[0]) : "Loading..."}</p>
-                <p className="text-[10px] text-primary font-bold uppercase tracking-widest">Master Admin</p>
-              </div>
-              <div className="h-10 w-10 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center text-primary font-bold">
-                {user?.name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || "A"}
-              </div>
-            </div>
           </div>
         </header>
 

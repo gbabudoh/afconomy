@@ -1,15 +1,19 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Dashboard from "@/components/Dashboard";
 import CurrencyConverter from "@/components/CurrencyConverter";
 import DataChart from "@/components/DataChart";
-import { DollarSign, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2, GraduationCap, Briefcase, LucideIcon, X, Clock, Share2, Bookmark } from "lucide-react";
+import { DollarSign, BarChart3, ArrowUpRight, ArrowDownRight, Globe, Building2, GraduationCap, Briefcase, LucideIcon, X, Clock, Share2, Bookmark, TrendingUp, Activity, Users, Leaf, FileText } from "lucide-react";
 import { useCountry } from "@/lib/CountryContext";
 import { africanCountries } from "@/lib/countries";
 import { countryMacroData, getMacroForCountry, CountryMacro, MacroMetric } from "@/lib/macroData";
 import { researchReports, ResearchReport } from "@/lib/researchData";
 import { newsData, NewsItem } from "@/lib/newsData";
+import { INDICATORS as WB_INDICATORS } from "@/lib/api/worldbank";
+import { IMF_INDICATORS } from "@/lib/api/imf";
+
+const INDICATORS = { ...WB_INDICATORS, ...IMF_INDICATORS };
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -17,6 +21,44 @@ export default function Home() {
   const [selectedResearch, setSelectedResearch] = useState<ResearchReport | null>(null);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const { selectedCountries } = useCountry();
+  const [apiData, setApiData] = useState<any>(null);
+  const [research, setResearch] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch real-time data if available
+    const fetchRealData = async () => {
+      try {
+        const codes = selectedCountries.length > 0 ? selectedCountries : ['NGA', 'EGY', 'ZAF', 'KEN', 'GHA', 'MAR', 'ETH', 'RWA', 'CIV'];
+        const response = await fetch('/api/macro-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            countries: codes,
+            indicators: [INDICATORS.GDP_GROWTH, INDICATORS.INFLATION, INDICATORS.POPULATION]
+          })
+        });
+        const result = await response.json();
+        if (result.success) {
+          setApiData(result.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch real-time data:", error);
+      }
+    };
+
+    const fetchResearch = async () => {
+      try {
+        const res = await fetch("/api/research");
+        const data = await res.json();
+        if (res.ok) setResearch(data);
+      } catch (err) {
+        console.error("Failed to fetch research:", err);
+      }
+    };
+
+    fetchRealData();
+    fetchResearch();
+  }, [selectedCountries]);
 
   // Resolve active macro data
   const activeMacro = useMemo(() => {
@@ -68,7 +110,7 @@ export default function Home() {
       });
     };
 
-    return {
+    const finalMacro = {
       metrics: [
         { ...selectedData[0].metrics[0], value: `${avgGrowth.toFixed(1)}%`, trend: "Avg" },
         { ...selectedData[0].metrics[1], value: `${avgInflation.toFixed(1)}%`, trend: "Avg" },
@@ -78,13 +120,41 @@ export default function Home() {
       financial: aggregateMetrics('financial') as MacroMetric[],
       education: aggregateMetrics('education') as MacroMetric[],
       employment: aggregateMetrics('employment') as MacroMetric[],
-      trade: selectedData[0].trade, // Trade is categorical, just use first
+      trade: selectedData[0].trade,
       performance: aggregateMetrics('performance') as MacroMetric[],
-      // For charts in multi-select, we'll just use the first country's trend or default to continental
       gdpData: selectedData[0].gdpData,
       inflationData: selectedData[0].inflationData,
     };
-  }, [selectedCountries]);
+
+    // Simple override logic for demonstration of "live" feel
+    if (apiData && apiData.length === 1 && selectedCountries.length === 1) {
+      const live = apiData[0];
+      const code = selectedCountries[0];
+      
+      // Try to override with IMF data if available (2026 projections)
+      if (live[IMF_INDICATORS.GDP_GROWTH]) {
+        finalMacro.metrics[0].value = `${parseFloat(live[IMF_INDICATORS.GDP_GROWTH].value).toFixed(1)}%`;
+        finalMacro.metrics[0].trend = "IMF 2026";
+      }
+      if (live[IMF_INDICATORS.INFLATION]) {
+        finalMacro.metrics[1].value = `${parseFloat(live[IMF_INDICATORS.INFLATION].value).toFixed(1)}%`;
+        finalMacro.metrics[1].trend = "IMF 2026";
+      }
+      if (live[IMF_INDICATORS.POPULATION]) {
+        const popVal = parseFloat(live[IMF_INDICATORS.POPULATION].value);
+        finalMacro.metrics[2].value = `${popVal.toFixed(1)}M`;
+        finalMacro.metrics[2].trend = "IMF 2026";
+      }
+      if (live[IMF_INDICATORS.CURRENT_ACCOUNT_TOTAL]) {
+        const tradeVal = parseFloat(live[IMF_INDICATORS.CURRENT_ACCOUNT_TOTAL].value);
+        finalMacro.metrics[3].value = `${tradeVal >= 0 ? '+' : ''}$${tradeVal.toFixed(1)}B`;
+        finalMacro.metrics[3].trend = "IMF 2026";
+        finalMacro.metrics[3].color = tradeVal >= 0 ? 'text-emerald-600' : 'text-red-500';
+      }
+    }
+
+    return finalMacro;
+  }, [selectedCountries, apiData]);
 
   // Filter news for current selection
   const activeNews = useMemo(() => {
@@ -122,17 +192,17 @@ export default function Home() {
   ];
 
   const marketData = [
-    { name: "NGX All-Share", value: "52,340.12", change: "+2.4%", isUp: true, country: "Nigeria" },
-    { name: "JSE Top 40", value: "68,234.50", change: "-0.8%", isUp: false, country: "South Africa" },
-    { name: "NSE 20", value: "1,845.23", change: "+1.2%", isUp: true, country: "Kenya" },
-    { name: "EGX 30", value: "18,456.78", change: "+0.5%", isUp: true, country: "Egypt" },
+    { name: "NGX All-Share", value: "156,492.36", change: "+1.9%", isUp: true, country: "Nigeria" },
+    { name: "JSE Top 40", value: "108,163.94", change: "-0.1%", isUp: false, country: "South Africa" },
+    { name: "NSE 20", value: "3,140.93", change: "+0.1%", isUp: true, country: "Kenya" },
+    { name: "EGX 30", value: "40,657.30", change: "-2.2%", isUp: false, country: "Egypt" },
   ].filter(market => isSelected(market.country));
 
   const currencies = [
-    { pair: "USD/NGN", rate: "1,485.50", change: "+0.3%", isUp: true, country: "Nigeria" },
-    { pair: "USD/ZAR", rate: "18.45", change: "-0.2%", isUp: false, country: "South Africa" },
-    { pair: "USD/KES", rate: "128.30", change: "+0.1%", isUp: true, country: "Kenya" },
-    { pair: "USD/EGP", rate: "30.85", change: "+0.4%", isUp: true, country: "Egypt" },
+    { pair: "USD/NGN", rate: "1,525.50", change: "+0.8%", isUp: true, country: "Nigeria" },
+    { pair: "USD/ZAR", rate: "18.95", change: "+0.3%", isUp: true, country: "South Africa" },
+    { pair: "USD/KES", rate: "129.50", change: "-0.2%", isUp: false, country: "Kenya" },
+    { pair: "USD/EGP", rate: "48.35", change: "+0.1%", isUp: true, country: "Egypt" },
   ].filter(curr => isSelected(curr.country));
 
   const renderOverview = () => (
@@ -575,29 +645,38 @@ export default function Home() {
         <div className="space-y-3 sm:space-y-4">
           <h3 className="text-lg sm:text-xl font-bold text-foreground">Featured Research</h3>
           <div className="grid gap-3 sm:gap-4">
-            {researchReports.map((report) => (
-              <div 
-                key={report.id}
-                onClick={() => setSelectedResearch(report)}
-                className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/30 transition-all cursor-pointer shadow-sm hover:shadow-md"
-              >
-                <div className="p-2 sm:p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors flex-shrink-0">
-                  <report.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
-                    <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded border border-primary/10">
-                      {report.category}
-                    </span>
-                    <span className="text-[10px] sm:text-xs text-secondary">{report.date}</span>
+            {(research.length > 0 ? research : researchReports).map((report) => {
+              const iconName = (report as any).icon;
+              const Icon = typeof iconName === 'string' 
+                ? (({ Activity, Leaf, Building2, TrendingUp, FileText }[iconName] || FileText) as LucideIcon)
+                : (report.icon as LucideIcon);
+              
+              const displayDate = report.date || (report.publishedAt ? new Date(report.publishedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : "");
+
+              return (
+                <div 
+                  key={report.id}
+                  onClick={() => setSelectedResearch(report)}
+                  className="group flex items-center gap-3 sm:gap-4 p-3 sm:p-5 rounded-xl border border-secondary/10 bg-card hover:bg-secondary/5 hover:border-primary/30 transition-all cursor-pointer shadow-sm hover:shadow-md"
+                >
+                  <div className="p-2 sm:p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors flex-shrink-0">
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </div>
-                  <h4 className="font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                    {report.title}
-                  </h4>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                      <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/5 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded border border-primary/10">
+                        {report.category}
+                      </span>
+                      <span className="text-[10px] sm:text-xs text-secondary">{displayDate}</span>
+                    </div>
+                    <h4 className="font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                      {report.title}
+                    </h4>
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 sm:h-5 sm:w-5 text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
                 </div>
-                <ArrowUpRight className="h-4 w-4 sm:h-5 sm:w-5 text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -612,7 +691,13 @@ export default function Home() {
               <div className="p-6 border-b border-border flex items-center justify-between bg-secondary/5 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 rounded-xl bg-primary/10">
-                    <selectedResearch.icon className="h-6 w-6 text-primary" />
+                    {(() => {
+                      const iconName = (selectedResearch as any).icon;
+                      const Icon = typeof iconName === 'string'
+                        ? (({ Activity, Leaf, Building2, TrendingUp, FileText }[iconName] || FileText) as LucideIcon)
+                        : (selectedResearch.icon as LucideIcon);
+                      return <Icon className="h-6 w-6 text-primary" />;
+                    })()}
                   </div>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
@@ -620,7 +705,7 @@ export default function Home() {
                     </span>
                     <div className="flex items-center gap-2 text-xs text-secondary mt-0.5">
                       <Clock className="h-3.5 w-3.5" />
-                      Published {selectedResearch.date}
+                      Published {selectedResearch.date || (selectedResearch as any).publishedAt ? new Date((selectedResearch as any).publishedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : ""}
                     </div>
                   </div>
                 </div>

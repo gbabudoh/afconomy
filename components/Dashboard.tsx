@@ -41,7 +41,7 @@ export default function Dashboard({ children, activeTab, onTabChange }: Dashboar
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all flex-1 justify-center ${
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all flex-1 justify-center cursor-pointer ${
                   activeTab === tab.id
                     ? "text-primary border-b-2 border-primary bg-primary/5"
                     : "text-secondary hover:text-foreground"
@@ -62,7 +62,7 @@ export default function Dashboard({ children, activeTab, onTabChange }: Dashboar
                 <button
                   key={tab.id}
                   onClick={() => onTabChange(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all cursor-pointer ${
                     activeTab === tab.id
                       ? "bg-card text-primary shadow-sm border border-primary/10"
                       : "text-secondary hover:text-foreground hover:bg-secondary/10"

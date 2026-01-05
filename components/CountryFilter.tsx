@@ -48,7 +48,7 @@ export default function CountryFilter({ selectedCountries, onCountriesChange }: 
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-secondary bg-card border border-secondary/20 rounded-lg hover:bg-secondary/5 hover:border-secondary/30 transition-all"
+        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium text-secondary bg-card border border-secondary/20 rounded-lg hover:bg-secondary/5 hover:border-secondary/30 transition-all cursor-pointer"
       >
         <span className="hidden sm:inline truncate max-w-[120px] lg:max-w-none">{getSelectedCountryNames()}</span>
         <span className="sm:hidden">Countries</span>
@@ -63,10 +63,10 @@ export default function CountryFilter({ selectedCountries, onCountriesChange }: 
             {/* Header */}
             <div className="p-3 sm:p-4 border-b border-secondary/10 bg-secondary/5">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-bold text-sm sm:text-base text-foreground">Select Countries</h3>
+                <h3 className="font-bold text-sm sm:text-base text-foreground cursor-pointer">Select Countries</h3>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 hover:bg-secondary/10 rounded-md transition-colors"
+                  className="p-1 hover:bg-secondary/10 rounded-md transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4 text-secondary" />
                 </button>
@@ -78,19 +78,19 @@ export default function CountryFilter({ selectedCountries, onCountriesChange }: 
                 placeholder="Search countries..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 py-2 text-sm bg-background border border-secondary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground placeholder:text-secondary/50"
+                className="w-full px-3 py-2 text-sm bg-background border border-secondary/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground placeholder:text-secondary/50 cursor-pointer"
               />
             </div>
 
             {/* Region Filter */}
             <div className="p-3 sm:p-4 border-b border-secondary/10 bg-background">
-              <p className="text-[10px] font-bold text-secondary uppercase tracking-wider mb-2">Filter by Region</p>
+              <p className="text-[10px] font-bold text-secondary uppercase tracking-wider mb-2 cursor-pointer">Filter by Region</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2">
                 {regions.map((region) => (
                   <button
                     key={region}
                     onClick={() => setSelectedRegion(region)}
-                    className={`px-2 sm:px-3 py-2 text-xs font-medium rounded-lg transition-all text-center ${
+                    className={`px-2 sm:px-3 py-2 text-xs font-medium rounded-lg transition-all text-center cursor-pointer ${
                       selectedRegion === region
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : "bg-secondary/5 text-secondary hover:bg-secondary/10 border border-secondary/15 hover:border-secondary/25"
@@ -104,19 +104,19 @@ export default function CountryFilter({ selectedCountries, onCountriesChange }: 
 
             {/* Actions */}
             <div className="flex items-center justify-between p-2 sm:p-3 border-b border-secondary/10 bg-secondary/5">
-              <span className="text-xs text-secondary">
+              <span className="text-xs text-secondary cursor-pointer">
                 {selectedCountries.length} of {africanCountries.length} selected
               </span>
               <div className="flex gap-2">
                 <button
                   onClick={selectAll}
-                  className="text-xs font-medium text-primary hover:underline"
+                  className="text-xs font-medium text-primary hover:underline cursor-pointer"
                 >
                   Select All
                 </button>
                 <button
                   onClick={clearAll}
-                  className="text-xs font-medium text-secondary hover:text-foreground"
+                  className="text-xs font-medium text-secondary hover:text-foreground cursor-pointer"
                 >
                   Clear
                 </button>
@@ -135,7 +135,7 @@ export default function CountryFilter({ selectedCountries, onCountriesChange }: 
                     <button
                       key={country.code}
                       onClick={() => toggleCountry(country.code)}
-                      className={`w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-secondary/10 transition-colors border border-transparent ${
+                      className={`w-full flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-secondary/10 transition-colors border border-transparent cursor-pointer ${
                         selectedCountries.includes(country.code) ? "bg-primary/5 border-primary/10" : ""
                       }`}
                     >

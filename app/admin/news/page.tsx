@@ -175,7 +175,7 @@ export default function NewsManagement() {
         </div>
         <button 
           onClick={handleNew}
-          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95"
+          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           Broadcast New Intel
@@ -219,12 +219,12 @@ export default function NewsManagement() {
                 </div>
                 <div className="flex items-center gap-3">
                   {editingItem && (
-                     <button onClick={() => { setEditingItem(null); setIsEditorOpen(false); }} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm flex items-center gap-2 text-[10px] font-black uppercase">
+                     <button onClick={() => { setEditingItem(null); setIsEditorOpen(false); }} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm flex items-center gap-2 text-[10px] font-black uppercase cursor-pointer">
                         <X className="h-4 w-4" />
                         Discard Draft
                      </button>
                   )}
-                  <button onClick={() => setIsEditorOpen(false)} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm">
+                  <button onClick={() => setIsEditorOpen(false)} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm cursor-pointer">
                       <X className="h-5 w-5" />
                   </button>
                 </div>
@@ -341,13 +341,13 @@ export default function NewsManagement() {
                        <button 
                           type="button" 
                           onClick={() => setIsEditorOpen(false)}
-                          className="flex-1 lg:w-32 py-5 bg-white border border-slate-200 text-slate-500 font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-slate-50 transition-all active:scale-95"
+                          className="flex-1 lg:w-32 py-5 bg-white border border-slate-200 text-slate-500 font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-slate-50 transition-all active:scale-95 cursor-pointer"
                        >
                          Discard
                        </button>
                        <button 
                           type="submit" 
-                          className="flex-[2] lg:w-64 py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95"
+                          className="flex-[2] lg:w-64 py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95 cursor-pointer"
                        >
                           <Save className="h-4 w-4" />
                           {editingItem ? "Update Intelligence" : "Broadcast to Feed"}
@@ -372,7 +372,7 @@ export default function NewsManagement() {
                   />
                </div>
                <div className="flex items-center gap-3">
-                  <button className="p-3 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-slate-900 transition-colors">
+                  <button className="p-3 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
                      <Filter className="h-4 w-4" />
                   </button>
                   <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden md:block"></div>
@@ -424,21 +424,21 @@ export default function NewsManagement() {
                            <div className="flex items-center gap-6">
                               <button 
                                 onClick={() => handleEdit(item)}
-                                className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-primary flex items-center gap-2 transition-all"
+                                className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-primary flex items-center gap-2 transition-all cursor-pointer"
                               >
                                 <Edit3 className="h-3.5 w-3.5" />
                                 Decrypt Intel
                               </button>
                               <button 
                                 onClick={() => handleDelete(item.id)}
-                                className="px-3 py-1.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-red-700 rounded-xl flex items-center gap-2 transition-all shadow-sm"
+                                className="px-3 py-1.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-red-700 rounded-xl flex items-center gap-2 transition-all shadow-sm cursor-pointer"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                                 Purge
                               </button>
                            </div>
                            {item.url && (
-                             <a href={item.url} target="_blank" className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500/60 hover:text-blue-600 flex items-center gap-2 transition-all">
+                             <a href={item.url} target="_blank" className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500/60 hover:text-blue-600 flex items-center gap-2 transition-all cursor-pointer">
                                 Source Node <ExternalLink className="h-3.5 w-3.5" />
                              </a>
                            )}

@@ -2,102 +2,123 @@
 
 import { useRef, useEffect, useState } from "react";
 import "@mux/mux-video";
+import { Tv, Youtube, AlertCircle, Loader2 } from "lucide-react";
 
-/**
- * Interface for the Mux Video element to avoid 'any' and resolve lint errors.
- */
-interface MuxVideoElement extends HTMLElement {
-  muted: boolean;
+interface StreamData {
+  id: string;
+  title: string;
+  url: string;
+  type: "LIVE" | "PRE_RECORDED";
+  thumbnailUrl: string | null;
 }
 
 export default function TVPlayer() {
-  const videoRef = useRef<MuxVideoElement>(null);
+  const [stream, setStream] = useState<StreamData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // TODO: Replace with your actual Mux Playback ID from https://dashboard.mux.com/
-  // For now, showing a placeholder message instead of trying to load an invalid stream
-  const playbackId = process.env.NEXT_PUBLIC_MUX_PLAYBACK_ID || ""; 
-  
-  // Compute initial error state based on playback ID
-  const initialError = !playbackId 
-    ? "No stream configured. Add NEXT_PUBLIC_MUX_PLAYBACK_ID to your .env.local file."
-    : null;
-  
-  const [error, setError] = useState<string | null>(initialError);
+  const fetchActiveStream = async () => {
+    try {
+      const res = await fetch("/api/tv");
+      const data = await res.json();
+      if (data.success && data.stream) {
+        setStream(data.stream);
+      } else {
+        setStream(null);
+      }
+    } catch (err) {
+      console.error("Failed to fetch stream:", err);
+      setError("Signal connectivity lost");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!playbackId) {
-      return;
-    }
+    fetchActiveStream();
+    // Poll for changes every 30 seconds
+    const interval = setInterval(fetchActiveStream, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
-    // Ensuring the video element is muted for autoplay support if needed
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-    }
+  const getYouTubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
 
-    const currentVideo = videoRef.current;
-    
-    // Custom error event listener for mux-video
-    const handleError = (e: Event) => {
-      console.error("Mux Video Error:", e);
-      setError("Failed to load live stream. Please verify your Mux playback ID.");
-    };
+  const isMuxId = (url: string) => {
+    // Basic check: if it's a short alphanumeric string and doesn't look like a URL
+    return url.length > 5 && !url.includes(".") && !url.includes("/");
+  };
 
-    if (currentVideo) {
-      currentVideo.addEventListener("error", handleError);
-    }
+  if (loading) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-black/90 p-6 text-center">
+        <Loader2 className="h-8 w-8 text-primary animate-spin mb-4" />
+        <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Scanning Satellite Mesh...</p>
+      </div>
+    );
+  }
 
-    return () => {
-      if (currentVideo) {
-        currentVideo.removeEventListener("error", handleError);
-      }
-    };
-  }, [playbackId]);
+  if (!stream) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-black/95 p-6 text-center">
+        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+          <Tv className="h-6 w-6 text-primary opacity-40" />
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs font-black text-white uppercase tracking-wider">No Active Signal</p>
+          <p className="text-[10px] text-white/40 uppercase tracking-widest">Awaiting Admin Broadcast</p>
+        </div>
+      </div>
+    );
+  }
+
+  const youtubeId = getYouTubeId(stream.url);
+  const muxId = isMuxId(stream.url);
 
   return (
     <div className="relative w-full h-full group bg-black">
-      {error || !playbackId ? (
-        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-4">
-          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-white">Live Stream Placeholder</p>
-            <p className="text-xs text-white/60 max-w-xs">
-              {error || "Configure your Mux stream to enable live broadcasting"}
-            </p>
-          </div>
-          <div className="mt-4 p-3 rounded-lg bg-muted/10 border border-border/20">
-            <p className="text-[10px] font-mono text-white/40">
-              Add to .env.local:<br/>
-              NEXT_PUBLIC_MUX_PLAYBACK_ID=your_id
-            </p>
-          </div>
-        </div>
+      {youtubeId ? (
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0`}
+          className="w-full h-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      ) : muxId ? (
+        <mux-video
+          playback-id={stream.url}
+          metadata-video-title={stream.title}
+          stream-type={stream.type === "LIVE" ? "live" : "on-demand"}
+          controls
+          autoPlay
+          muted
+          className="w-full h-full object-contain"
+        />
       ) : (
-        <>
-          <mux-video
-            ref={videoRef}
-            playback-id={playbackId}
-            metadata-video-title="Afconomy Live"
-            metadata-viewer-user-id="user-id-007"
-            stream-type="live"
-            controls
-            autoPlay
-            muted
-            className="w-full h-full object-contain"
-          />
-          
-          {/* Overlay when not playing or loading */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="flex flex-col items-center">
-              <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-              <p className="text-white text-sm font-bold">Connecting to Stream...</p>
-            </div>
-          </div>
-        </>
+        <video
+          src={stream.url}
+          controls
+          autoPlay
+          muted
+          className="w-full h-full object-contain"
+          poster={stream.thumbnailUrl || ""}
+        >
+          Your browser does not support the video tag.
+        </video>
       )}
+
+      {/* Connection Indicator */}
+      <div className="absolute top-4 left-4 z-10 pointer-events-none">
+        <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full overflow-hidden">
+          <div className={`h-2 w-2 rounded-full ${stream.type === "LIVE" ? "bg-red-500 animate-pulse" : "bg-blue-500"}`} />
+          <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">
+            {stream.type === "LIVE" ? "Live Signal" : "VOD Intelligence"}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -140,7 +140,7 @@ export default function PollsManagement() {
         </div>
         <button 
           onClick={() => setIsCreatorOpen(true)}
-          className="px-6 py-3 bg-primary text-white font-black uppercase text-xs rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)]"
+          className="px-6 py-3 bg-primary text-white font-black uppercase text-xs rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           Initialize New Protocol
@@ -156,7 +156,7 @@ export default function PollsManagement() {
                   <Target className="h-4 w-4 text-primary" />
                   Protocol Initialization
                 </h2>
-                <button onClick={() => setIsCreatorOpen(false)} className="p-2 hover:bg-slate-200 rounded-lg text-slate-500 transition-colors">
+                <button onClick={() => setIsCreatorOpen(false)} className="p-2 hover:bg-slate-200 rounded-lg text-slate-500 transition-colors cursor-pointer">
                   <X className="h-5 w-5" />
                 </button>
               </div>
@@ -190,7 +190,7 @@ export default function PollsManagement() {
                         <button 
                           type="button"
                           onClick={() => handleRemoveOption(idx)}
-                          className="p-3 text-red-400 hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all"
+                          className="p-3 text-red-400 hover:text-red-500 hover:bg-red-500/5 rounded-xl transition-all cursor-pointer"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -202,7 +202,7 @@ export default function PollsManagement() {
                     <button 
                       type="button"
                       onClick={handleAddOption}
-                      className="w-full py-3 border border-dashed border-slate-200 rounded-xl text-[10px] font-bold text-slate-400 hover:text-slate-900 hover:border-slate-400 hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 border border-dashed border-slate-200 rounded-xl text-[10px] font-bold text-slate-400 hover:text-slate-900 hover:border-slate-400 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <PlusCircle className="h-4 w-4" />
                       Append Additional Option
@@ -213,14 +213,14 @@ export default function PollsManagement() {
                 <div className="pt-6 border-t border-slate-200 flex gap-4">
                   <button 
                     type="submit"
-                    className="flex-1 py-4 bg-primary text-white font-black uppercase text-xs tracking-widest rounded-xl hover:bg-primary/90 transition-all shadow-[0_4px_20px_rgba(234,179,8,0.2)]"
+                    className="flex-1 py-4 bg-primary text-white font-black uppercase text-xs tracking-widest rounded-xl hover:bg-primary/90 transition-all shadow-[0_4px_20px_rgba(234,179,8,0.2)] cursor-pointer"
                   >
                     Activate Protocol
                   </button>
                   <button 
                     type="button"
                     onClick={() => setIsCreatorOpen(false)}
-                    className="px-6 py-4 bg-white text-slate-500 font-bold uppercase text-[10px] tracking-widest rounded-xl hover:bg-slate-50 transition-all border border-slate-200"
+                    className="px-6 py-4 bg-white text-slate-500 font-bold uppercase text-[10px] tracking-widest rounded-xl hover:bg-slate-50 transition-all border border-slate-200 cursor-pointer"
                   >
                     Abort
                   </button>
@@ -281,7 +281,7 @@ export default function PollsManagement() {
                   <div className="flex items-center gap-2">
                      <button 
                        onClick={() => handleToggleActive(poll.id, poll.active)}
-                       className={`p-2 rounded-lg transition-all ${
+                       className={`p-2 rounded-lg transition-all cursor-pointer ${
                          poll.active ? "text-red-400 hover:text-red-500 hover:bg-red-500/10" : "text-green-400 hover:text-green-500 hover:bg-green-500/10"
                        }`}
                        title={poll.active ? "Terminate Protocol" : "Reactivate Protocol"}
@@ -290,14 +290,14 @@ export default function PollsManagement() {
                      </button>
                      <button 
                         onClick={() => handleDeletePoll(poll.id)}
-                        className="p-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all shadow-sm"
+                        className="p-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-all shadow-sm cursor-pointer"
                         title="Purge Intel"
                      >
                         <Trash2 className="h-4 w-4" />
                      </button>
                   </div>
                   <div className="flex items-center gap-4">
-                     <button className="text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 transition-colors flex items-center gap-1.5">
+                     <button className="text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 transition-colors flex items-center gap-1.5 cursor-pointer">
                        Full Analytics <BarChart3 className="h-3 w-3" />
                      </button>
                   </div>

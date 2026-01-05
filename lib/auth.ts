@@ -9,7 +9,7 @@ export async function sign(payload: JWTPayload) {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("2h")
+    .setExpirationTime("30d")
     .sign(secret);
 }
 
@@ -29,7 +29,7 @@ export async function getSession() {
 
 export async function login(user: { id: string; name: string | null; email: string; role: string }) {
   // Create the session
-  const expires = new Date(Date.now() + 120 * 60 * 1000); // 2 hours from now
+  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
   const session = await sign({ user });
 
   // Save the session in a cookie

@@ -168,7 +168,7 @@ export default function TVManagement() {
         </div>
         <button 
           onClick={handleNew}
-          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95"
+          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           Initialize New Stream
@@ -210,7 +210,7 @@ export default function TVManagement() {
                   </h2>
                   <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Stream Configuration Matrix</p>
                 </div>
-                <button onClick={() => setIsEditorOpen(false)} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-primary transition-all shadow-sm">
+                <button onClick={() => setIsEditorOpen(false)} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-primary transition-all shadow-sm cursor-pointer">
                     <X className="h-5 w-5" />
                 </button>
             </div>
@@ -249,7 +249,7 @@ export default function TVManagement() {
                           <button 
                             type="button"
                             onClick={() => setIsActive(!isActive)}
-                            className={`w-full border rounded-2xl p-4 text-sm font-black flex items-center justify-between transition-all ${
+                            className={`w-full border rounded-2xl p-4 text-sm font-black flex items-center justify-between transition-all cursor-pointer ${
                               isActive ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-slate-50 border-slate-200 text-slate-400'
                             }`}
                           >
@@ -330,13 +330,13 @@ export default function TVManagement() {
                        <button 
                           type="button" 
                           onClick={() => setIsEditorOpen(false)}
-                          className="flex-1 lg:w-32 py-5 bg-white border border-slate-200 text-slate-500 font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-slate-50 hover:text-primary transition-all active:scale-95"
+                          className="flex-1 lg:w-32 py-5 bg-white border border-slate-200 text-slate-500 font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-slate-50 hover:text-primary transition-all active:scale-95 cursor-pointer"
                        >
                          Abort
                        </button>
                        <button 
                           type="submit" 
-                          className="flex-[2] lg:w-64 py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95"
+                          className="flex-[2] lg:w-64 py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95 cursor-pointer"
                        >
                           <Save className="h-4 w-4" />
                           {editingItem ? "Update Protocol" : "Authorize Stream"}
@@ -363,7 +363,7 @@ export default function TVManagement() {
                   />
                </div>
                <div className="flex items-center gap-3">
-                  <button className="p-3 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-primary transition-colors">
+                  <button className="p-3 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-primary transition-colors cursor-pointer">
                      <Filter className="h-4 w-4" />
                   </button>
                   <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden md:block"></div>
@@ -454,13 +454,13 @@ export default function TVManagement() {
                               <div className="flex items-center justify-end gap-2 group-hover:opacity-100 transition-opacity">
                                  <button 
                                    onClick={() => handleEdit(item)}
-                                   className="h-10 w-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 hover:border-primary/40 hover:text-primary transition-all text-slate-400 shadow-sm"
+                                   className="h-10 w-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 hover:border-primary/40 hover:text-primary transition-all text-slate-400 shadow-sm cursor-pointer"
                                  >
                                     <Edit3 className="h-4 w-4" />
                                  </button>
                                  <button 
                                    onClick={() => handleDelete(item.id)}
-                                   className="h-10 w-10 flex items-center justify-center rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm"
+                                   className="h-10 w-10 flex items-center justify-center rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm cursor-pointer"
                                  >
                                     <Trash2 className="h-4 w-4" />
                                  </button>

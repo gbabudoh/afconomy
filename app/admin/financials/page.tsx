@@ -152,7 +152,7 @@ export default function FinancialAssets() {
         </div>
         <button 
           onClick={() => openEditor()}
-          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95"
+          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95 cursor-pointer"
         >
           <Plus className="h-4 w-4" />
           List New Currency
@@ -195,7 +195,7 @@ export default function FinancialAssets() {
                 <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1">Registry Management</p>
                 </div>
                 {editingItem && (
-                    <button onClick={() => { setEditingItem(null); setRate(""); }} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-primary transition-all shadow-sm flex items-center gap-2 text-[10px] font-black uppercase">
+                    <button onClick={() => { setEditingItem(null); setRate(""); }} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-primary transition-all shadow-sm flex items-center gap-2 text-[10px] font-black uppercase cursor-pointer">
                         <X className="h-4 w-4" />
                         Cancel Edit
                     </button>
@@ -288,7 +288,7 @@ export default function FinancialAssets() {
                     <div className="lg:col-span-1">
                         <button 
                             type="submit" 
-                            className="w-full py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95 disabled:opacity-50 h-full"
+                            className="w-full py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95 disabled:opacity-50 h-full cursor-pointer"
                         >
                             <Save className="h-4 w-4" />
                             {editingItem ? "Update Protocol" : "Authorize Asset"}
@@ -327,7 +327,7 @@ export default function FinancialAssets() {
                   />
                </div>
                <div className="flex items-center gap-3">
-                  <button className="p-3 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-primary transition-colors">
+                  <button className="p-3 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-primary transition-colors cursor-pointer">
                      <Filter className="h-4 w-4" />
                   </button>
                   <div className="h-8 w-[1px] bg-slate-200 mx-2 hidden md:block"></div>
@@ -412,13 +412,13 @@ export default function FinancialAssets() {
                               <div className="flex items-center justify-end gap-2 group-hover:opacity-100 transition-opacity">
                                  <button 
                                    onClick={() => openEditor(curr)} 
-                                   className="h-10 w-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 hover:border-primary/40 hover:text-primary transition-all text-slate-400 shadow-sm"
+                                   className="h-10 w-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 hover:border-primary/40 hover:text-primary transition-all text-slate-400 shadow-sm cursor-pointer"
                                  >
                                     <Edit3 className="h-4 w-4" />
                                  </button>
                                   <button 
                                     onClick={() => handleDelete(curr.id)} 
-                                    className="h-10 w-10 flex items-center justify-center rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm"
+                                    className="h-10 w-10 flex items-center justify-center rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm cursor-pointer"
                                     title="Purge Record"
                                   >
                                      <Trash2 className="h-4 w-4" />

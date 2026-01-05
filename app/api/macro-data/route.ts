@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchWorldBankData, getLatestCountryData, INDICATORS } from '@/lib/api/worldbank';
+import { fetchWorldBankData, getLatestCountryData, INDICATORS as WB_INDICATORS } from '@/lib/api/worldbank';
+import { fetchIMFData, IMF_INDICATORS, getLatestIMFValue } from '@/lib/api/imf';
 import { africanCountries } from '@/lib/countries';
+
+const INDICATORS = { ...WB_INDICATORS, ...IMF_INDICATORS };
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -28,7 +31,58 @@ export async function GET(request: NextRequest) {
 
     if (country) {
       // Fetch all latest data for a specific country
-      const result = await getLatestCountryData(country);
+      const wbResult = await getLatestCountryData(country);
+      
+      // Also fetch IMF data for 2026 projections
+      const imfData = await fetchIMFData(
+        [
+          IMF_INDICATORS.GDP_GROWTH, 
+          IMF_INDICATORS.INFLATION, 
+          IMF_INDICATORS.POPULATION,
+          IMF_INDICATORS.CURRENT_ACCOUNT_TOTAL
+        ],
+        [country]
+      );
+
+      const result: any = { 
+        year: wbResult.year,
+        data: {} 
+      };
+
+      // Map WB data to rich objects
+      Object.entries(wbResult.data).forEach(([key, value]) => {
+        result.data[key] = value !== null ? {
+          value: value,
+          year: wbResult.year.toString(),
+          unit: key === WB_INDICATORS.POPULATION ? 'Total' : 'Percent'
+        } : null;
+      });
+      
+      if (imfData) {
+        result.data = {
+          ...result.data,
+          [IMF_INDICATORS.GDP_GROWTH]: {
+            value: getLatestIMFValue(imfData, IMF_INDICATORS.GDP_GROWTH, country, '2026'),
+            year: '2026',
+            unit: 'Percent'
+          },
+          [IMF_INDICATORS.INFLATION]: {
+            value: getLatestIMFValue(imfData, IMF_INDICATORS.INFLATION, country, '2026'),
+            year: '2026',
+            unit: 'Percent'
+          },
+          [IMF_INDICATORS.POPULATION]: {
+            value: getLatestIMFValue(imfData, IMF_INDICATORS.POPULATION, country, '2026'),
+            year: '2026',
+            unit: 'Millions'
+          },
+          [IMF_INDICATORS.CURRENT_ACCOUNT_TOTAL]: {
+            value: getLatestIMFValue(imfData, IMF_INDICATORS.CURRENT_ACCOUNT_TOTAL, country, '2026'),
+            year: '2026',
+            unit: 'Billions'
+          }
+        };
+      }
       
       return NextResponse.json({ 
         success: true, 
@@ -87,7 +141,18 @@ export async function POST(request: NextRequest) {
         
         const indicatorList = indicators || Object.values(INDICATORS);
         
-        for (const indicator of indicatorList) {
+        // Split indicators into WB and IMF
+        const imfIndicatorsToFetch = indicatorList.filter((id: string) => Object.values(IMF_INDICATORS).includes(id));
+        const wbIndicatorsToFetch = indicatorList.filter((id: string) => !Object.values(IMF_INDICATORS).includes(id));
+
+        // Fetch IMF Data if needed
+        let imfDataResponse = null;
+        if (imfIndicatorsToFetch.length > 0) {
+          imfDataResponse = await fetchIMFData(imfIndicatorsToFetch, [countryCode]);
+        }
+
+        // Fetch WB Data
+        for (const indicator of wbIndicatorsToFetch) {
           try {
             const data = await fetchWorldBankData(
               countryCode,
@@ -96,16 +161,28 @@ export async function POST(request: NextRequest) {
               endYear || 2024
             );
             
-            // Get the most recent non-null value
             const latestValue = data.find(item => item.value !== null);
             countryData[indicator] = latestValue ? {
               value: latestValue.value,
               year: latestValue.date,
               unit: latestValue.unit
             } : null;
-            
           } catch (error) {
-            console.error(`Error fetching ${indicator} for ${countryCode}:`, error);
+            console.error(`Error fetching WB ${indicator} for ${countryCode}:`, error);
+            countryData[indicator] = null;
+          }
+        }
+
+        // Process IMF Data
+        for (const indicator of imfIndicatorsToFetch) {
+          if (imfDataResponse) {
+            const val = getLatestIMFValue(imfDataResponse, indicator, countryCode, endYear?.toString() || '2026');
+            countryData[indicator] = val !== null ? {
+              value: val,
+              year: endYear?.toString() || '2026',
+              unit: indicator === IMF_INDICATORS.POPULATION ? 'Millions' : 'Percent'
+            } : null;
+          } else {
             countryData[indicator] = null;
           }
         }

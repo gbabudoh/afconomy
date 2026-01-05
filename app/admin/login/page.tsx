@@ -30,6 +30,7 @@ export default function AdminLoginPage() {
       if (res.ok) {
         if (data.user.role === "ADMIN") {
           router.push("/admin");
+          router.refresh();
         } else {
           setError("Access denied. You do not have administrator privileges.");
           // We should probably log them out or clear session if they aren't admin but somehow got here
@@ -46,13 +47,16 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F8F8] flex flex-col items-center justify-center p-4">
-      <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors">
+      <Link href="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
         <ArrowLeft className="h-4 w-4" />
         <span className="text-sm font-medium">Back to Platform</span>
       </Link>
       
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-10">
+          <Link href="/admin" className="mb-6">
+            <Image src="/logo.png" alt="Afconomy" width={160} height={40} className="h-10 w-auto cursor-pointer" />
+          </Link>
           <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 border border-primary/20 shadow-[0_0_20px_rgba(234,179,8,0.1)]">
             <Shield className="h-8 w-8 text-primary" />
           </div>
@@ -107,7 +111,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.2)] active:scale-[0.98]"
+              className="w-full h-12 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.2)] active:scale-[0.98] cursor-pointer"
             >
               {loading ? (
                 <>

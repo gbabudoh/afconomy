@@ -159,7 +159,7 @@ export default function UsersManagement() {
         </div>
         <button 
           onClick={handleNew}
-          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95"
+          className="px-6 py-4 bg-primary text-white font-black uppercase text-xs rounded-2xl hover:bg-primary/90 transition-all flex items-center gap-2 shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95 cursor-pointer"
         >
           <UserPlus className="h-4 w-4" />
           Authorize New Asset
@@ -203,12 +203,12 @@ export default function UsersManagement() {
                 </div>
                 <div className="flex items-center gap-3">
                   {editingUser && (
-                     <button onClick={() => { setEditingUser(null); setIsEditorOpen(false); }} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm flex items-center gap-2 text-[10px] font-black uppercase">
+                     <button onClick={() => { setEditingUser(null); setIsEditorOpen(false); }} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm flex items-center gap-2 text-[10px] font-black uppercase cursor-pointer">
                         <X className="h-4 w-4" />
                         Cancel Draft
                      </button>
                   )}
-                  <button onClick={() => setIsEditorOpen(false)} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm">
+                  <button onClick={() => setIsEditorOpen(false)} className="p-3 bg-white/50 border border-slate-200 rounded-2xl text-slate-500 hover:text-slate-900 transition-all shadow-sm cursor-pointer">
                       <X className="h-5 w-5" />
                   </button>
                 </div>
@@ -288,13 +288,13 @@ export default function UsersManagement() {
                        <button 
                           type="button" 
                           onClick={() => setIsEditorOpen(false)}
-                          className="flex-1 lg:w-32 py-5 bg-white border border-slate-200 text-slate-500 font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-slate-50 transition-all active:scale-95"
+                          className="flex-1 lg:w-32 py-5 bg-white border border-slate-200 text-slate-500 font-black uppercase text-xs tracking-widest rounded-2xl hover:bg-slate-50 transition-all active:scale-95 cursor-pointer"
                        >
                          Discard
                        </button>
                        <button 
                           type="submit" 
-                          className="flex-[2] lg:w-64 py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95"
+                          className="flex-[2] lg:w-64 py-5 bg-primary text-white font-black uppercase text-xs tracking-[0.2em] rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-3 shadow-[0_8px_30px_rgba(234,179,8,0.3)] active:scale-95 cursor-pointer"
                        >
                           <Save className="h-4 w-4" />
                           {editingUser ? "Update Clearance" : "Authorize New Asset"}
@@ -327,7 +327,7 @@ export default function UsersManagement() {
                     <option>USER (Standard)</option>
                   </select>
                   <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden md:block"></div>
-                  <button className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-slate-900 transition-colors shadow-sm">
+                  <button className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-slate-900 transition-colors shadow-sm cursor-pointer">
                      <Filter className="h-4 w-4" />
                   </button>
                </div>
@@ -410,14 +410,14 @@ export default function UsersManagement() {
                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button 
                                  onClick={() => handleToggleRole(user)}
-                                 className="h-10 w-10 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/40 transition-all shadow-sm"
+                                 className="h-10 w-10 flex items-center justify-center rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/40 transition-all shadow-sm cursor-pointer"
                                  title="Modify Clearance"
                               >
                                  <ShieldAlert className="h-4 w-4" />
                               </button>
                               <button 
                                  onClick={() => handleDeleteUser(user.id)}
-                                 className="h-10 w-10 flex items-center justify-center rounded-2xl bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm"
+                                 className="h-10 w-10 flex items-center justify-center rounded-2xl bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm cursor-pointer"
                                  title="Terminate Access"
                               >
                                  <Trash2 className="h-4 w-4" />
