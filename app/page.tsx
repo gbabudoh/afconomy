@@ -205,40 +205,52 @@ export default function Home() {
     { pair: "USD/EGP", rate: "48.35", change: "+0.1%", isUp: true, country: "Egypt" },
   ].filter(curr => isSelected(curr.country));
 
-  const renderOverview = () => (
-    <section className="space-y-8">
-      {/* Header */}
-      <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight text-foreground">
-          Macro Engine{selectedCountries.length === 1 ? `: ${africanCountries.find(c => c.code === selectedCountries[0])?.name}` : selectedCountries.length > 1 ? ` (${selectedCountries.length} Countries)` : ""}
-        </h2>
-        <p className="text-base text-secondary">Key economic indicators {selectedCountries.length > 0 ? "for selected regions" : "across the African continent"}</p>
+  const renderSidebarMetrics = () => (
+    <div className="space-y-3">
+      {/* Sidebar header */}
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-0.5 rounded-full bg-primary" />
+        <p className="text-[11px] font-black text-foreground/80 uppercase tracking-widest">
+          Macro Engine
+          {selectedCountries.length === 1
+            ? ` · ${africanCountries.find(c => c.code === selectedCountries[0])?.name}`
+            : selectedCountries.length > 1
+            ? ` · ${selectedCountries.length} Countries`
+            : ""}
+        </p>
       </div>
-
-      {/* Metrics Grid */}
-      <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      {/* 2×2 compact metric grid */}
+      <div className="grid grid-cols-2 gap-2">
         {macroMetrics.map((metric: MacroMetric) => (
-          <div 
-            key={metric.name} 
-            className="group relative overflow-hidden rounded-xl border border-secondary/10 bg-card p-4 sm:p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/20 hover:bg-secondary/5"
+          <div
+            key={metric.name}
+            className="group relative rounded-xl border border-border bg-white p-3 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200"
           >
-            <div className="flex items-start justify-between mb-3 sm:mb-4">
-              <div className={`p-2 sm:p-3 rounded-lg bg-secondary/5 transition-colors group-hover:bg-primary/5`}>
-                <metric.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${metric.color} transition-transform group-hover:scale-110`} />
+            <div className="flex items-center justify-between mb-2">
+              <div className="p-1.5 rounded-lg bg-muted">
+                <metric.icon className={`h-3 w-3 ${metric.color}`} />
               </div>
-              <span className={`text-xs font-bold px-2 py-1 rounded-full ${metric.trend.startsWith('+') ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+              <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${
+                metric.trend.startsWith('+')
+                  ? 'bg-emerald-50 text-emerald-600'
+                  : metric.trend === 'IMF 2026' || metric.trend === 'Avg' || metric.trend === 'Total'
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'bg-red-50 text-red-600'
+              }`}>
                 {metric.trend}
               </span>
             </div>
-            <div className="space-y-1">
-              <p className="text-xs sm:text-sm font-medium text-secondary">{metric.name}</p>
-              <h3 className="text-2xl sm:text-3xl font-bold text-foreground">{metric.value}</h3>
-            </div>
-            <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <p className="text-[10px] text-secondary font-medium truncate">{metric.name}</p>
+            <p className="text-sm font-black text-foreground mt-0.5">{metric.value}</p>
+            <div className="absolute bottom-0 left-0 h-0.5 w-full rounded-b-xl bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
         ))}
       </div>
+    </div>
+  );
 
+  const renderOverview = () => (
+    <section className="space-y-8">
       {/* Charts Section */}
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-secondary/10 bg-card p-4 sm:p-6 shadow-sm hover:shadow-md transition-all hover:border-secondary/20">
@@ -785,10 +797,6 @@ export default function Home() {
   };
 
   return (
-    <Dashboard activeTab={activeTab} onTabChange={setActiveTab}>
-      {activeTab === "overview" && renderOverview()}
-      {activeTab === "markets" && renderMarkets()}
-      {activeTab === "deep-dive" && renderDeepDive()}
-    </Dashboard>
+    <Dashboard sidebarTop={renderSidebarMetrics()} />
   );
 }

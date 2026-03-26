@@ -3,10 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Menu, User, LogOut, Shield, X, TrendingUp, BarChart3, Globe, Settings } from "lucide-react";
+import { Search, Menu, User, LogOut, Shield, X, TrendingUp, BarChart3, Globe, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 import CountryFilter from "./CountryFilter";
-import NotificationCenter from "./NotificationCenter";
 import { useCountry } from "@/lib/CountryContext";
 
 export default function Navbar() {
@@ -55,8 +54,20 @@ export default function Navbar() {
             </Link>
           </div>
 
+          {/* Desktop Nav Links */}
+          <div className="hidden lg:flex items-center gap-1 flex-1 px-4 lg:px-8">
+            <Link href="/calendar" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:text-foreground hover:bg-secondary/10 transition-colors">
+              <Calendar className="h-4 w-4" />
+              Calendar
+            </Link>
+            <Link href="/countries" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-secondary hover:text-foreground hover:bg-secondary/10 transition-colors">
+              <Globe className="h-4 w-4" />
+              Countries
+            </Link>
+          </div>
+
           {/* Desktop Search */}
-          <div className="hidden md:block max-w-md flex-1 px-4 lg:px-8">
+          <div className="hidden md:block lg:hidden max-w-md flex-1 px-4 lg:px-8">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary/60" />
               <input
@@ -80,7 +91,6 @@ export default function Navbar() {
                 onCountriesChange={setSelectedCountries}
               />
             </div>
-            <NotificationCenter />
             <div className="h-4 sm:h-6 w-px bg-border hidden sm:block"></div>
             
             {loading ? (
@@ -208,13 +218,26 @@ export default function Navbar() {
                 <span className="text-sm font-medium text-foreground">Markets</span>
               </Link>
               
-              <Link 
-                href="/"
+              <Link
+                href="/calendar"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary/10 transition-colors cursor-pointer"
+              >
+                <Calendar className="h-5 w-5 text-secondary" />
+                <span className="text-sm font-medium text-foreground">Economic Calendar</span>
+              </Link>
+
+              <Link
+                href="/countries"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-secondary/10 transition-colors cursor-pointer"
               >
                 <Globe className="h-5 w-5 text-secondary" />
-                <span className="text-sm font-medium text-foreground">Analysis</span>
+                <span className="text-sm font-medium text-foreground">Country Profiles</span>
               </Link>
             </div>
 

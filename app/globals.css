@@ -57,7 +57,7 @@
 }
 
 body {
-  background: var(--background);
+  background: #ffffff;
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   margin: 0;
@@ -65,9 +65,28 @@ body {
   overflow-x: hidden;
 }
 
-/* Custom scrollbar for data-heavy views */
+/* ─── Light theme ────────────────────────────────────────────────────── */
+html, html.dark {
+  --background: #ffffff;
+  --foreground: #0a0a14;
+  --secondary: #555568;
+  --muted: #f4f4f6;
+  --muted-foreground: #666678;
+  --border: #e4e4ea;
+  --card: #ffffff;
+  --card-foreground: #0a0a14;
+}
+
+/* ─── Brand red fading to white top → bottom ─────────────────────────── */
+html body {
+  background: linear-gradient(to bottom, rgba(255, 2, 1, 0.08) 0%, rgba(255, 2, 1, 0.02) 40%, #ffffff 100%);
+  background-attachment: fixed;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -75,10 +94,33 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--muted);
+  background: rgba(255,255,255,0.08);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
+  background: rgba(255,255,255,0.16);
 }
+
+/* ─── Breaking News Ticker ───────────────────────────────────────────── */
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-animate {
+  animation: ticker-scroll 60s linear infinite;
+  will-change: transform;
+}
+
+.ticker-animate:hover {
+  animation-play-state: paused;
+}
+
+/* ─── Ambient Glow Pulse ─────────────────────────────────────────────── */
+@keyframes ambient-pulse {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 0.55; }
+}
+
+.ambient-glow { animation: ambient-pulse 5s ease-in-out infinite; }

@@ -128,7 +128,7 @@ export default function RealTimeMacroData() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3">
         {indicators.map(({ key, name, data: indicatorData }) => {
           const Icon = getIcon(key);
           const value = indicatorData?.value || null;

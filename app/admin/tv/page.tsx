@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   Plus, 
   Search, 
@@ -26,10 +26,11 @@ import {
   MonitorPlay,
   PlayCircle,
   Clock,
-  Youtube,
   Link as LinkIcon,
   ToggleLeft as Toggle,
-  ToggleRight
+  ToggleRight,
+  Upload,
+  Loader2
 } from "lucide-react";
 
 interface StreamItem {
@@ -58,11 +59,23 @@ export default function TVManagement() {
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [type, setType] = useState<"LIVE" | "PRE_RECORDED">("LIVE");
   const [isActive, setIsActive] = useState(true);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+
+  const thumbInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const fetchStreams = async () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/admin/tv`);
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await res.text();
+        console.error("Non-JSON response received:", text.slice(0, 100));
+        setLoading(false);
+        return;
+      }
       const data = await res.json();
       if (res.ok) {
         setStreams(data.streams);
@@ -101,6 +114,38 @@ export default function TVManagement() {
     setIsEditorOpen(true);
   };
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'url' | 'thumbnailUrl') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (field === 'thumbnailUrl') setUploadingThumbnail(true);
+    else setUploadingVideo(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.url) {
+        if (field === 'thumbnailUrl') setThumbnailUrl(data.url);
+        else setUrl(data.url);
+      } else {
+        alert("Upload failed: " + (data.error || "Unknown error"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed. Check console for details.");
+    } finally {
+      if (field === 'thumbnailUrl') setUploadingThumbnail(false);
+      else setUploadingVideo(false);
+    }
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
@@ -123,9 +168,22 @@ export default function TVManagement() {
         body: JSON.stringify(finalPayload),
       });
 
+      const contentType = res.headers.get("content-type");
       if (res.ok) {
+        if (contentType && contentType.includes("application/json")) {
+            await res.json();
+        }
         setIsEditorOpen(false);
         fetchStreams();
+      } else {
+        if (contentType && contentType.includes("application/json")) {
+            const errorData = await res.json();
+            alert("Error: " + (errorData.error || "Unknown error"));
+        } else {
+            const errorText = await res.text();
+            console.error("Server error (HTML):", errorText.slice(0, 200));
+            alert("Server returned an error page. Check console.");
+        }
       }
     } catch (err) {
       console.error(err);
@@ -140,8 +198,17 @@ export default function TVManagement() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
+      
+      const contentType = res.headers.get("content-type");
       if (res.ok) {
         fetchStreams();
+      } else {
+        if (contentType && contentType.includes("application/json")) {
+            const errorData = await res.json();
+            alert("Error: " + (errorData.error || "Unknown error"));
+        } else {
+            console.error("Delete failed (HTML response)");
+        }
       }
     } catch (err) {
       console.error(err);
@@ -281,10 +348,28 @@ export default function TVManagement() {
                           <input 
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-mono focus:outline-none focus:border-primary/40 transition-all text-slate-900"
-                            placeholder="https://youtube.com/live/... or media.m3u8"
+                            className="w-full pl-12 pr-32 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-mono focus:outline-none focus:border-primary/40 transition-all text-slate-900"
+                            placeholder="http://.../hls/stream.m3u8 or media.mp4"
                             required
                           />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 border-l border-slate-100 pl-2">
+                             <input 
+                               type="file" 
+                               ref={videoInputRef} 
+                               className="hidden" 
+                               onChange={(e) => handleUpload(e, 'url')}
+                               accept="video/*"
+                             />
+                             <button
+                                type="button"
+                                onClick={() => videoInputRef.current?.click()}
+                                disabled={uploadingVideo}
+                                className="px-3 py-2 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                             >
+                               {uploadingVideo ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                               Upload
+                             </button>
+                          </div>
                         </div>
                       </div>
 
@@ -295,20 +380,34 @@ export default function TVManagement() {
                           <input 
                             value={thumbnailUrl}
                             onChange={(e) => setThumbnailUrl(e.target.value)}
-                            className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-[10px] focus:outline-none focus:border-primary/40 transition-all text-slate-900 font-medium"
+                            className="w-full pl-12 pr-32 py-4 bg-white border border-slate-200 rounded-2xl text-[10px] focus:outline-none focus:border-primary/40 transition-all text-slate-900 font-medium"
                             placeholder="https://..."
                           />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 border-l border-slate-100 pl-2">
+                             <input 
+                               type="file" 
+                               ref={thumbInputRef} 
+                               className="hidden" 
+                               onChange={(e) => handleUpload(e, 'thumbnailUrl')}
+                               accept="image/*"
+                             />
+                             <button
+                                type="button"
+                                onClick={() => thumbInputRef.current?.click()}
+                                disabled={uploadingThumbnail}
+                                className="px-3 py-2 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                             >
+                               {uploadingThumbnail ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
+                               Cover
+                             </button>
+                          </div>
                         </div>
                       </div>
 
                       <div className="bg-white/40 border border-slate-200 p-6 rounded-3xl space-y-4">
                         <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Signal Preview</h4>
                         <div className="aspect-video w-full bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden flex items-center justify-center relative">
-                           {url && url.includes('youtube.com') ? (
-                              <Youtube className="h-12 w-12 text-red-500 opacity-20" />
-                           ) : (
-                              <Tv className="h-12 w-12 text-primary opacity-20" />
-                           )}
+                           <Tv className="h-12 w-12 text-primary opacity-20" />
                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
                         </div>
                       </div>
