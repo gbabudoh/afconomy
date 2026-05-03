@@ -9,6 +9,7 @@ import {
   Landmark, PiggyBank, Banknote, MapPin, Zap, ChevronRight,
 } from "lucide-react";
 import { COUNTRY_PROFILES } from "@/lib/countryProfiles";
+import { Flag } from "@/components/Flag";
 
 const IMPACT_STYLES = {
   high:   "bg-red-50 text-red-600 border-red-200/80",
@@ -68,7 +69,7 @@ export default function CountryProfilePage() {
           >
             <ArrowLeft className="h-4 w-4 text-black/60" />
           </Link>
-          <span className="text-lg leading-none">{country.flag}</span>
+          <Flag code={country.code} size="md" />
           <div className="min-w-0">
             <p className="text-sm font-black text-black leading-none truncate">{country.name}</p>
             <p className="text-[10px] text-black/35 font-medium mt-0.5">{country.region}</p>
@@ -86,12 +87,12 @@ export default function CountryProfilePage() {
           <motion.div variants={fadeUp} className="bg-white rounded-3xl border border-black/6 overflow-hidden">
             <div className="relative p-6 sm:p-8">
               {/* Flag watermark */}
-              <span className="absolute top-4 right-6 text-[120px] leading-none select-none pointer-events-none opacity-[0.045]">
-                {country.flag}
-              </span>
+              <div className="absolute top-4 right-6 opacity-[0.045] pointer-events-none">
+                <Flag code={country.code} size="xl" className="w-[180px] h-[120px]" />
+              </div>
 
               <div className="relative flex flex-col sm:flex-row sm:items-start gap-5">
-                <span className="text-5xl sm:text-6xl leading-none shrink-0">{country.flag}</span>
+                <Flag code={country.code} size="xl" className="rounded-xl shadow-lg shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start flex-wrap gap-3 mb-3">
                     <div>

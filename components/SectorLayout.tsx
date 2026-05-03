@@ -15,6 +15,7 @@ import { exportToCSV, exportToJSON } from "@/lib/exportUtils";
 import { generatePDFReport } from "@/lib/reportGenerator";
 import AISummary from "./AISummary";
 import SentimentMeter from "./SentimentMeter";
+import { Flag } from "./Flag";
 
 interface Metric {
   label: string;
@@ -187,7 +188,11 @@ export default function SectorLayout({
                 className="premium-glass px-5 py-4 rounded-2xl flex items-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-all w-full sm:min-w-60 justify-between shadow-xl"
               >
                 <div className="flex items-center gap-2.5">
-                  <Globe className="h-4 w-4 text-primary shrink-0" />
+                  {selectedCountry !== "All Africa" ? (
+                    <Flag code={AFRICAN_COUNTRIES_MAP[selectedCountry]} size="sm" />
+                  ) : (
+                    <Globe className="h-4 w-4 text-primary shrink-0" />
+                  )}
                   <span className="text-sm font-black truncate text-black">{selectedCountry}</span>
                 </div>
                 <ChevronDown className={`h-4 w-4 shrink-0 transition-transform text-black/40 ${isDropdownOpen ? "rotate-180" : ""}`} />
@@ -206,7 +211,10 @@ export default function SectorLayout({
                       onClick={() => { setSelectedCountry("All Africa"); setIsDropdownOpen(false); }}
                       className="w-full text-left px-4 py-3 rounded-xl hover:bg-black/5 transition-all flex items-center justify-between"
                     >
-                      <span className="text-sm font-bold text-black">All Africa</span>
+                      <div className="flex items-center gap-3">
+                        <Globe className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-sm font-bold text-black">All Africa</span>
+                      </div>
                       {selectedCountry === "All Africa" && <Check className="h-4 w-4 text-primary" />}
                     </button>
                     <div className="h-px bg-black/5 my-1.5" />
@@ -216,7 +224,10 @@ export default function SectorLayout({
                         onClick={() => { setSelectedCountry(country); setIsDropdownOpen(false); }}
                         className="w-full text-left px-4 py-3 rounded-xl hover:bg-black/5 transition-all flex items-center justify-between"
                       >
-                        <span className="text-sm font-bold text-black">{country}</span>
+                        <div className="flex items-center gap-3">
+                          <Flag code={AFRICAN_COUNTRIES_MAP[country]} size="sm" />
+                          <span className="text-sm font-bold text-black">{country}</span>
+                        </div>
                         {selectedCountry === country && <Check className="h-4 w-4 text-primary" />}
                       </button>
                     ))}
