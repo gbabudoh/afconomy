@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "@mux/mux-video";
 import { Loader2, Radio, PlayCircle } from "lucide-react";
 
@@ -14,9 +14,34 @@ interface StreamData {
   thumbnailUrl: string | null;
 }
 
-export default function TVPlayer() {
+interface TVPlayerProps {
+  isMuted?: boolean;
+  isPlaying?: boolean;
+  streamMode?: "live" | "recorded";
+}
+
+export default function TVPlayer({ isMuted = true, isPlaying = true, streamMode = "live" }: TVPlayerProps) {
   const [stream, setStream] = useState<StreamData | null>(null);
   const [loading, setLoading] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const muxRef = useRef<any>(null);
+
+  useEffect(() => {
+    const syncAudio = () => {
+      const el = videoRef.current || muxRef.current;
+      if (el) {
+        el.muted = isMuted;
+        el.volume = isMuted ? 0 : 1;
+        if (isPlaying) el.play().catch(() => {});
+        else el.pause();
+      }
+    };
+
+    syncAudio();
+    // Double-sync after a short delay to handle late-mounting media
+    const timer = setTimeout(syncAudio, 100);
+    return () => clearTimeout(timer);
+  }, [isMuted, isPlaying]);
 
   const fetchActiveStream = async () => {
     try {
@@ -27,7 +52,10 @@ export default function TVPlayer() {
         return;
       }
       const data = await res.json();
-      setStream(data.success && data.stream ? data.stream : null);
+      const activeStream = data.success && data.stream ? data.stream : null;
+      
+      // Filter based on streamMode if needed, but for now we just show what's active
+      setStream(activeStream);
     } catch {
       setStream(null);
     } finally {
@@ -39,7 +67,7 @@ export default function TVPlayer() {
     fetchActiveStream();
     const interval = setInterval(fetchActiveStream, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [streamMode]);
 
   if (loading) {
     return (
@@ -57,9 +85,10 @@ export default function TVPlayer() {
     return (
       <div className="relative w-full h-full bg-black">
         <video
-          controls
+          ref={videoRef}
+          controls={false}
           autoPlay
-          muted
+          muted={isMuted}
           loop
           playsInline
           className="w-full h-full object-cover opacity-80"
@@ -77,7 +106,6 @@ export default function TVPlayer() {
           </div>
         </div>
         
-        {/* Subtle vignette */}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-transparent to-black/20" />
       </div>
     );
@@ -91,28 +119,29 @@ export default function TVPlayer() {
     <div className="relative w-full h-full group bg-black">
       {isHls(stream.url) || isMuxId(stream.url) ? (
         <mux-video
+          ref={muxRef}
           src={isHls(stream.url) ? stream.url : undefined}
           playback-id={isMuxId(stream.url) ? stream.url : undefined}
           metadata-video-title={stream.title}
           stream-type={stream.type === "LIVE" ? "live" : "on-demand"}
-          controls
+          controls={false}
           autoPlay
-          muted
+          muted={isMuted}
           className="w-full h-full object-cover"
         />
       ) : (
         <video
+          ref={videoRef}
           src={stream.url}
-          controls
+          controls={false}
           autoPlay
-          muted
+          muted={isMuted}
           playsInline
           className="w-full h-full object-cover"
           poster={stream.thumbnailUrl || ""}
         />
       )}
 
-      {/* Connection indicator */}
       <div className="absolute top-6 left-6 z-10 pointer-events-none">
         <div className="flex items-center gap-2.5 glass-panel border-white/20 px-4 py-2 rounded-2xl shadow-2xl">
           <div className={`h-2 w-2 rounded-full ${stream.type === "LIVE" ? "bg-red-500 animate-pulse glow-primary" : "bg-blue-500 glow-primary"}`} />
@@ -122,7 +151,6 @@ export default function TVPlayer() {
         </div>
       </div>
       
-      {/* Subtle vignette */}
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-transparent to-black/20" />
     </div>
   );

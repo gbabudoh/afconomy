@@ -146,10 +146,13 @@ export async function fetchNewsByCountry(
 
   } catch (error) {
     console.error(`Failed to fetch news for ${countryName}:`, error);
-    return getEnhancedMockNews().filter(article => 
+    const mockArticles = getEnhancedMockNews();
+    const filtered = mockArticles.filter(article => 
       article.title.toLowerCase().includes(countryName.toLowerCase()) ||
       article.description.toLowerCase().includes(countryName.toLowerCase())
     );
+    // If no country specific mock news, return general African economic news
+    return filtered.length > 0 ? filtered : mockArticles.slice(0, 5);
   }
 }
 

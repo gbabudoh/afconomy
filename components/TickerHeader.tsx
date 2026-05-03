@@ -16,6 +16,8 @@ const STOCK_DATA = [
   { name: "Gold", value: "$2,342.10", change: "+0.5%", isUp: true },
 ];
 
+import NotificationCenter from "./NotificationCenter";
+
 export default function TickerHeader() {
   return (
     <header className="w-full bg-[#fafafa]/80 backdrop-blur-3xl border-b border-black/5 h-14 flex items-center overflow-hidden z-50 glass-gradient-vibrant">
@@ -47,11 +49,13 @@ export default function TickerHeader() {
         <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#fafafa] to-transparent z-10" />
       </div>
       
-      <div className="flex-shrink-0 px-6 border-l border-black/10 hidden lg:flex items-center gap-4">
+      <div className="flex-shrink-0 px-6 border-l border-black/10 hidden lg:flex items-center gap-6">
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.3)]" />
           <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Market Open</span>
         </div>
+        <div className="h-4 w-px bg-black/10" />
+        <NotificationCenter />
       </div>
     </header>
   );

@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Public API to fetch the currently active broadcast stream.
  */
 export async function GET() {
+  console.log(">>> [API] Executing GET /api/tv");
   try {
     const stream = await (prisma as any).stream.findFirst({
       where: { isActive: true },

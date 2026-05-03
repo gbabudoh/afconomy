@@ -171,3 +171,23 @@ enum StreamType {
   LIVE
   PRE_RECORDED
 }
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  client    String   // Name of the company/client
+  tier      Tier     @default(STANDARD)
+  requests  Int      @default(0) // Track usage
+  limit     Int      @default(1000) // Monthly request limit
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+}
+
+enum Tier {
+  STANDARD
+  GOLD
+  ENTERPRISE
+}
