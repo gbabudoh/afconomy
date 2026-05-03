@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import "./mobile.css";
 import ClientLayout from "../components/ClientLayout";
@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Afconomy | African Financial Data & Multimedia Platform",
+  title: "Afconomy | Premium African Financial Intelligence",
   description: "High-density financial metrics and seamless multimedia experience for the African continent.",
   icons: {
     icon: "/favicon.png",
@@ -23,18 +28,10 @@ export const metadata: Metadata = {
   viewport: {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
+    maximumScale: 1,
+    userScalable: false,
   },
   themeColor: "#ff0201",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Afconomy",
-  },
-  formatDetection: {
-    telephone: false,
-  },
 };
 
 export default function RootLayout({
@@ -43,9 +40,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" style={{ scrollBehavior: 'auto' }}>
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground overflow-hidden h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased font-outfit bg-background text-foreground overflow-hidden h-screen w-screen selection:bg-primary/30`}
       >
         <ClientLayout>{children}</ClientLayout>
       </body>
