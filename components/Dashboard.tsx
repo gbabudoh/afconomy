@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { Play, Signal, Radio, History, Maximize2, Volume2, Settings } from "lucide-react";
 import TickerHeader from "./TickerHeader";
 import TickerFooter from "./TickerFooter";
@@ -61,37 +62,20 @@ export default function Dashboard(_: { children?: ReactNode }) {
           {/* Content — tighter on mobile, comfortable on desktop */}
           <div className="flex-1 p-3 sm:p-5 lg:p-6 flex flex-col gap-3 sm:gap-5 lg:gap-6 relative z-10 pb-22 lg:pb-6">
 
-            {/* Stream Header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 sm:gap-4">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-black/5 shadow-sm">
-                  <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${streamMode === "live" ? "bg-primary animate-pulse shadow-[0_0_8px_rgba(255,2,1,0.4)]" : "bg-black/20"}`} />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-black leading-none">
-                    {streamMode === "live" ? "Live" : "Recorded"}
-                  </span>
-                </div>
-                {/* Signal info — visible on sm+ only */}
-                <div className="hidden sm:flex items-center gap-2">
-                  <div className="h-4 w-px bg-black/10" />
-                  <Signal className="h-3.5 w-3.5 text-black/30" />
-                  <span className="text-[10px] font-black text-black/30 uppercase tracking-widest">HD 1080p</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <button className="p-2 rounded-xl bg-white border border-black/5 shadow-sm hover:bg-black/2 transition-all active:scale-95">
-                  <Maximize2 className="h-4 w-4 text-black/40" />
-                </button>
-                <button className="p-2 rounded-xl bg-white border border-black/5 shadow-sm hover:bg-black/2 transition-all active:scale-95">
-                  <Settings className="h-4 w-4 text-black/40" />
-                </button>
-              </div>
-            </div>
+            {/* Stream Header Removed as requested */}
 
             {/* Video Container */}
             <div className="flex-1 relative group min-h-0">
               <div className="absolute inset-0 rounded-[1.75rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl ring-1 ring-black/5 bg-black">
                 <TVPlayer isMuted={isMuted} isPlaying={isPlaying} streamMode={streamMode} />
+                
+                {/* Video Badges removed - handled by TVPlayer internally */}
+
+                {/* Branding Watermark */}
+                <div className="absolute top-6 right-8 pointer-events-none opacity-80 flex items-center gap-2">
+                  <Image src="/logo.png" alt="Afconomy" width={80} height={20} className="h-5 w-auto" />
+                  <span className="text-xl font-black text-white ml-1">TV</span>
+                </div>
 
                 {/* Overlay Controls */}
                 <div className="absolute inset-x-0 bottom-0 p-4 sm:p-8 flex items-end justify-between opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
