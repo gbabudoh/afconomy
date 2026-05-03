@@ -3,7 +3,8 @@ const urlsToCache = [
   '/',
   '/globals.css',
   '/mobile.css',
-  '/logo.png'
+  '/logo.png',
+  '/icon.png'
 ];
 
 self.addEventListener('install', (event) => {
