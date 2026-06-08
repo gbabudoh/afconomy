@@ -24,10 +24,16 @@ export default function InsightsPanel({ sectorId }: { sectorId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [insights, setInsights] = useState<Insight[]>(MOCK_INSIGHTS);
   const [newMessage, setNewMessage] = useState("");
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<any>(null);
 
   useEffect(() => {
+    fetch("/api/auth/session")
+      .then(res => res.json())
+      .then(data => { if (data.user) setCurrentUser(data.user); })
+      .catch(() => {});
+
     // Connect to the existing socket server on port 3001
     socketRef.current = io("http://localhost:3001");
 
@@ -50,7 +56,7 @@ export default function InsightsPanel({ sectorId }: { sectorId: string }) {
     if (!newMessage.trim()) return;
     
     socketRef.current.emit("send-message", {
-      user: "Guest User",
+      user: currentUser?.name || "Guest",
       text: newMessage,
       isAdmin: false
     });
@@ -63,7 +69,7 @@ export default function InsightsPanel({ sectorId }: { sectorId: string }) {
       {/* Floating Toggle Button */}
       <button 
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-6 h-14 w-14 rounded-2xl bg-primary text-white shadow-2xl flex items-center justify-center hover:scale-110 transition-all z-40 group"
+        className="fixed bottom-64 right-4 lg:bottom-24 lg:right-6 h-14 w-14 rounded-2xl bg-primary text-white shadow-2xl flex items-center justify-center hover:scale-110 transition-all z-40 group"
       >
         <MessageSquare className="h-6 w-6" />
         <span className="absolute right-full mr-4 px-3 py-1 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
@@ -116,7 +122,7 @@ export default function InsightsPanel({ sectorId }: { sectorId: string }) {
                     </div>
                     <span className="text-[9px] font-bold text-black/20 uppercase">{insight.timestamp}</span>
                   </div>
-                  <div className="glass-card p-4 rounded-2xl bg-black/[0.02] border border-black/[0.03]">
+                  <div className="glass-card p-4 rounded-2xl bg-black/2 border border-black/3">
                     <p className="text-xs leading-relaxed font-medium text-black/70 italic">"{insight.text}"</p>
                   </div>
                 </motion.div>
@@ -132,7 +138,7 @@ export default function InsightsPanel({ sectorId }: { sectorId: string }) {
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Share your insight..."
-                  className="w-full bg-black/[0.03] border-none rounded-2xl py-4 pl-6 pr-14 text-xs font-medium focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full bg-black/3 border-none rounded-2xl py-4 pl-6 pr-14 text-xs font-medium focus:ring-2 focus:ring-primary/20 transition-all"
                 />
                 <button 
                   onClick={handleSend}
@@ -142,7 +148,7 @@ export default function InsightsPanel({ sectorId }: { sectorId: string }) {
                 </button>
               </div>
               <p className="mt-3 text-[9px] text-black/30 font-bold uppercase tracking-widest text-center">
-                Posting as <span className="text-primary">Verified Analyst</span>
+                Posting as <span className="text-primary">{currentUser ? currentUser.name : "Guest"}</span>
               </p>
             </div>
           </motion.div>

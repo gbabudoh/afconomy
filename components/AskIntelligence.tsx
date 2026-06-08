@@ -56,9 +56,9 @@ export default function AskIntelligence() {
   return (
     <>
       {/* Floating Trigger Button */}
-      <button 
+      <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-8 right-8 z-50 p-4 rounded-2xl bg-primary text-white shadow-2xl shadow-primary/40 hover:scale-110 transition-transform flex items-center gap-2 group"
+        className="fixed bottom-48 right-4 lg:bottom-8 lg:right-8 z-50 p-4 rounded-2xl bg-primary text-white shadow-2xl shadow-primary/40 hover:scale-110 transition-transform flex items-center gap-2 group"
       >
         <Sparkles className="h-5 w-5 fill-current" />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 font-black uppercase tracking-widest text-[10px] whitespace-nowrap">Ask Intelligence</span>

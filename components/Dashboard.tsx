@@ -59,63 +59,63 @@ export default function Dashboard(_: { children?: ReactNode }) {
             />
           </div>
 
-          {/* Content — tighter on mobile, comfortable on desktop */}
-          <div className="flex-1 p-3 sm:p-5 lg:p-6 flex flex-col gap-3 sm:gap-5 lg:gap-6 relative z-10 pb-22 lg:pb-6">
+          {/* Content — zero padding on mobile so video fills full height; desktop keeps spacing */}
+          <div className="flex-1 flex flex-col relative z-10 lg:p-6 lg:gap-6">
 
-            {/* Stream Header Removed as requested */}
-
-            {/* Video Container */}
-            <div className="flex-1 relative group min-h-0">
-              <div className="absolute inset-0 rounded-[1.75rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl ring-1 ring-black/5 bg-black">
+            {/* Video Container — 16:9 on mobile, flex-fill on desktop */}
+            <div className="w-full aspect-video lg:flex-1 lg:aspect-auto relative group min-h-0">
+              <div className="absolute inset-0 lg:rounded-[2.5rem] overflow-hidden shadow-2xl ring-1 ring-black/5 bg-black">
                 <TVPlayer isMuted={isMuted} isPlaying={isPlaying} streamMode={streamMode} />
-                
-                {/* Video Badges removed - handled by TVPlayer internally */}
 
                 {/* Branding Watermark */}
-                <div className="absolute top-6 right-8 pointer-events-none opacity-80 flex items-center gap-2">
-                  <Image src="/logo.png" alt="Afconomy" width={80} height={20} className="h-5 w-auto" />
-                  <span className="text-xl font-black text-white ml-1">TV</span>
+                <div className="absolute top-3 right-3 sm:top-6 sm:right-8 pointer-events-none opacity-70 flex items-center gap-1 sm:gap-2">
+                  <Image src="/logo.png" alt="Afconomy" width={80} height={20} className="h-4 sm:h-5 w-auto" />
+                  <span className="text-xs sm:text-xl font-black text-white">TV</span>
                 </div>
 
-                {/* Overlay Controls */}
-                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-8 flex items-end justify-between opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
-                  <div className="flex flex-col gap-1 sm:gap-2">
-                    <h1 className="text-lg sm:text-3xl font-black text-white tracking-tight drop-shadow-2xl leading-tight">
+                {/* Overlay Controls — always visible on mobile, hover-only on desktop */}
+                <div className="absolute inset-x-0 bottom-0 p-3 sm:p-8 flex items-end justify-between lg:opacity-0 lg:translate-y-4 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 lg:transition-all lg:duration-500"
+                  style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)" }}
+                >
+                  <div className="flex flex-col gap-0.5 sm:gap-2">
+                    <h1 className="text-[11px] sm:text-3xl font-black text-white tracking-tight drop-shadow-2xl leading-tight">
                       African Market Intelligence Report
                     </h1>
-                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                      <span className="text-xs font-bold text-white/60">Live from Lagos · Q2 Analysis</span>
+                    <div className="flex items-center gap-1.5 sm:gap-3 flex-wrap">
+                      <span className="text-[10px] sm:text-xs font-bold text-white/60">Live from Lagos · Q2 Analysis</span>
                       <div className="flex items-center gap-1 text-primary">
-                        <Radio className="h-3.5 w-3.5" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">12.4K Watching</span>
+                        <Radio className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
+                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest">12.4K Watching</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                    <button 
+                  <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                    <button
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className={`h-11 w-11 sm:h-14 sm:w-14 rounded-2xl flex items-center justify-center hover:scale-110 transition-all shadow-xl ${
+                      className={`h-8 w-8 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl flex items-center justify-center active:scale-95 transition-all shadow-xl ${
                         isPlaying ? "bg-white text-black" : "bg-primary text-white"
                       }`}
                     >
-                      {isPlaying ? <Play className="h-5 w-5 sm:h-6 sm:w-6 fill-current" /> : <Play className="h-5 w-5 sm:h-6 sm:w-6" />}
+                      {isPlaying ? <Play className="h-4 w-4 sm:h-6 sm:w-6 fill-current" /> : <Play className="h-4 w-4 sm:h-6 sm:w-6" />}
                     </button>
-                    <button 
+                    <button
                       onClick={() => setIsMuted(!isMuted)}
-                      className={`h-11 w-11 sm:h-14 sm:w-14 rounded-2xl backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-all border border-white/20 ${
+                      className={`h-8 w-8 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl backdrop-blur-md flex items-center justify-center transition-all border border-white/20 ${
                         isMuted ? "bg-white/10 text-white/40" : "bg-white/40 text-white shadow-lg"
                       }`}
                     >
-                      <Volume2 className="h-5 w-5 sm:h-6 sm:w-6" />
+                      <Volume2 className="h-4 w-4 sm:h-6 sm:w-6" />
                     </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Mode Selector */}
-            <div className="flex items-center gap-2 sm:gap-4">
+            {/* Mode Selector — pushed to bottom on mobile, flush on desktop */}
+            <div className="mt-auto lg:mt-0 flex items-center gap-2 sm:gap-4 px-3 pt-3 lg:px-0 lg:pt-0"
+              style={{ paddingBottom: "max(112px, calc(env(safe-area-inset-bottom, 0px) + 96px))" }}
+            >
               <button
                 onClick={() => setStreamMode("live")}
                 className={`flex-1 flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-4 rounded-2xl font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-xs sm:text-sm transition-all duration-300 active:scale-[0.97] ${
@@ -153,8 +153,8 @@ export default function Dashboard(_: { children?: ReactNode }) {
 
       <InsightsPanel sectorId="Global" />
 
-      {/* ─── BOTTOM TICKER — desktop only (MobileNav occupies this space on mobile) ─── */}
-      <div className="hidden lg:block">
+      {/* ─── BOTTOM TICKER — desktop only ─── */}
+      <div className="max-lg:hidden">
         <TickerFooter />
       </div>
       <AskIntelligence />

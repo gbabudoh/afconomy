@@ -4,7 +4,7 @@
   "description": "Premium African Financial Intelligence & Real-time Metrics",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "landscape",
+  "orientation": "any",
   "categories": ["finance", "business", "news"],
   "background_color": "#ffffff",
   "theme_color": "#ff0201",
