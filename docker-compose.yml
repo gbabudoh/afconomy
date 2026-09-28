@@ -1,0 +1,34 @@
+services:
+  # PostgreSQL 17 with the TimescaleDB extension
+  db:
+    image: timescale/timescaledb:latest-pg17
+    container_name: afconomy-db
+    environment:
+      POSTGRES_USER: afconomy_admin
+      POSTGRES_PASSWORD: afconomy_dev_password
+      POSTGRES_DB: afconomy_core
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U afconomy_admin -d afconomy_core"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Full-text search for the newsroom (TerminalSearch)
+  search:
+    image: getmeili/meilisearch:v1.15
+    container_name: afconomy-search
+    environment:
+      MEILI_MASTER_KEY: afconomy_dev_master_key
+      MEILI_ENV: development
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilidata:/meili_data
+
+volumes:
+  pgdata:
+  meilidata:

@@ -1,0 +1,315 @@
+// Afconomy data model
+//
+// Relational tables (users, newsroom, broadcasts) live alongside time-series
+// tables (asset_prices, indicator_observations). Prisma owns the table
+// definitions; converting the time-series tables to TimescaleDB hypertables
+// (plus compression) is hand-written SQL at the end of the init migration and
+// is skipped automatically on plain PostgreSQL.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =========================================================
+// Enums
+// =========================================================
+
+enum UserRole {
+  READER
+  JOURNALIST
+  EDITOR
+  ADMIN
+}
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  ELITE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  EXPIRED
+}
+
+enum RegionBloc {
+  ECOWAS
+  SADC
+  EAC
+  MAGHREB
+  ECCAS
+  PAN_AFRICAN
+}
+
+enum AssetClass {
+  STOCK
+  INDEX
+  FX
+  BOND
+  COMMODITY
+}
+
+enum AlertDelivery {
+  TERMINAL_ONLY
+  SMS
+  ALL
+}
+
+enum ArticleCategory {
+  POLICY
+  SOCIO_ECONOMIC
+  MARKETS
+  POLITICS
+  TRADE
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BroadcastStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+enum IndicatorFrequency {
+  DAILY
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+// =========================================================
+// Accounts & subscriptions
+// =========================================================
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  name      String?
+  role      UserRole @default(READER)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  subscription Subscription?
+  preferences  TraderPreference?
+  author       Author?
+  watchlist    WatchlistItem[]
+
+  @@map("users")
+}
+
+model Subscription {
+  id               String             @id @default(uuid()) @db.Uuid
+  userId           String             @unique @map("user_id") @db.Uuid
+  tier             SubscriptionTier   @default(FREE)
+  status           SubscriptionStatus @default(ACTIVE)
+  currentPeriodEnd DateTime?          @map("current_period_end") @db.Timestamptz
+  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime           @updatedAt @map("updated_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tier, status])
+  @@map("subscriptions")
+}
+
+model TraderPreference {
+  userId       String        @id @map("user_id") @db.Uuid
+  regions      RegionBloc[]
+  assetClasses AssetClass[]  @map("asset_classes")
+  delivery     AlertDelivery @default(TERMINAL_ONLY)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("trader_preferences")
+}
+
+model WatchlistItem {
+  userId    String   @map("user_id") @db.Uuid
+  symbol    String   @db.VarChar(20)
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset FinancialAsset @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+
+  @@id([userId, symbol])
+  @@map("watchlist_items")
+}
+
+// =========================================================
+// Newsroom
+// =========================================================
+
+model Author {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @unique @map("user_id") @db.Uuid
+  name      String   @db.VarChar(255)
+  slug      String   @unique @db.VarChar(255)
+  role      String   @default("Financial Analyst") @db.VarChar(100)
+  bio       String?
+  avatarUrl String?  @map("avatar_url")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user     User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  articles Article[]
+  hosted   Broadcast[]
+
+  @@map("authors")
+}
+
+model Article {
+  id          String          @id @default(uuid()) @db.Uuid
+  authorId    String?         @map("author_id") @db.Uuid
+  title       String          @db.VarChar(500)
+  slug        String          @unique @db.VarChar(500)
+  excerpt     String?         @db.VarChar(1000)
+  content     String
+  category    ArticleCategory
+  region      RegionBloc
+  // ISO 3166-1 alpha-2, when the story is about a single country
+  country     String?         @db.Char(2)
+  tags        String[]
+  status      ArticleStatus   @default(DRAFT)
+  isPremium   Boolean         @default(false) @map("is_premium")
+  publishedAt DateTime?       @map("published_at") @db.Timestamptz
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime        @updatedAt @map("updated_at") @db.Timestamptz
+
+  author Author?        @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  assets ArticleAsset[]
+
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([category, publishedAt(sort: Desc)])
+  @@index([region, publishedAt(sort: Desc)])
+  @@index([tags], type: Gin)
+  @@map("articles")
+}
+
+// Tickers mentioned in an article — lets the terminal show the price
+// action of a company at the moment a story was published.
+model ArticleAsset {
+  articleId String @map("article_id") @db.Uuid
+  symbol    String @db.VarChar(20)
+
+  article Article        @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  asset   FinancialAsset @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+
+  @@id([articleId, symbol])
+  @@index([symbol])
+  @@map("article_assets")
+}
+
+// =========================================================
+// Markets (metadata is relational, prices are a hypertable)
+// =========================================================
+
+model FinancialAsset {
+  // e.g. 'NGX:DANGCEM', 'JSE:SOL', 'USD/NGN'
+  symbol     String     @id @db.VarChar(20)
+  name       String     @db.VarChar(255)
+  assetClass AssetClass @map("asset_class")
+  exchange   String?    @db.VarChar(100)
+  currency   String     @db.VarChar(10)
+  country    String?    @db.Char(2)
+  region     RegionBloc
+  isActive   Boolean    @default(true) @map("is_active")
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz
+
+  prices    AssetPrice[]
+  articles  ArticleAsset[]
+  watchlist WatchlistItem[]
+
+  @@index([assetClass])
+  @@index([region])
+  @@map("financial_assets")
+}
+
+// TimescaleDB hypertable, partitioned on `time`.
+model AssetPrice {
+  time   DateTime @db.Timestamptz
+  symbol String   @db.VarChar(20)
+  open   Decimal  @db.Decimal(18, 4)
+  high   Decimal  @db.Decimal(18, 4)
+  low    Decimal  @db.Decimal(18, 4)
+  close  Decimal  @db.Decimal(18, 4)
+  volume Decimal? @db.Decimal(18, 2)
+
+  asset FinancialAsset @relation(fields: [symbol], references: [symbol])
+
+  @@id([time, symbol])
+  @@index([symbol, time(sort: Desc)])
+  @@map("asset_prices")
+}
+
+// Macro series from AfDB / World Bank / central banks (CPI, policy rate, GDP…)
+model EconomicIndicator {
+  id        String             @id @default(uuid()) @db.Uuid
+  // e.g. 'NG.CPI.YOY', 'ZA.POLICY_RATE'
+  code      String             @unique @db.VarChar(50)
+  name      String             @db.VarChar(255)
+  country   String             @db.Char(2)
+  region    RegionBloc
+  unit      String             @db.VarChar(50)
+  frequency IndicatorFrequency
+  source    String             @db.VarChar(100)
+  createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  observations IndicatorObservation[]
+
+  @@index([country])
+  @@map("economic_indicators")
+}
+
+// TimescaleDB hypertable, partitioned on `time`.
+model IndicatorObservation {
+  time        DateTime @db.Timestamptz
+  indicatorId String   @map("indicator_id") @db.Uuid
+  value       Decimal  @db.Decimal(18, 4)
+
+  indicator EconomicIndicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+
+  @@id([time, indicatorId])
+  @@index([indicatorId, time(sort: Desc)])
+  @@map("indicator_observations")
+}
+
+// =========================================================
+// Live broadcasts (LiveKit)
+// =========================================================
+
+model Broadcast {
+  id           String           @id @default(uuid()) @db.Uuid
+  // LiveKit room name, e.g. 'brent-crude-analysis'
+  roomName     String           @unique @map("room_name") @db.VarChar(100)
+  title        String           @db.VarChar(255)
+  description  String?
+  status       BroadcastStatus  @default(SCHEDULED)
+  // Minimum tier required to receive a LiveKit token
+  requiredTier SubscriptionTier @default(PREMIUM) @map("required_tier")
+  // LL-HLS playback URL once the stream is egressed to a CDN
+  hlsUrl       String?          @map("hls_url")
+  hostId       String?          @map("host_id") @db.Uuid
+  scheduledAt  DateTime?        @map("scheduled_at") @db.Timestamptz
+  startedAt    DateTime?        @map("started_at") @db.Timestamptz
+  endedAt      DateTime?        @map("ended_at") @db.Timestamptz
+  createdAt    DateTime         @default(now()) @map("created_at") @db.Timestamptz
+
+  host Author? @relation(fields: [hostId], references: [id], onDelete: SetNull)
+
+  @@index([status, scheduledAt])
+  @@map("broadcasts")
+}

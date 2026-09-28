@@ -1,26 +1,92 @@
 @import "tailwindcss";
+/* LiveKit styles are imported from components/PremiumLiveStream.tsx — the
+   package only exports them under the JS "import" condition */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ============================================
+   AFCONOMY DESIGN SYSTEM — TAILWIND V4 THEME
+   ============================================ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Brand Colors — light theme */
+  --color-af-bg:        #F3F5F9;   /* insets: inputs, table headers, chips */
+  --color-af-panel:     #FFFFFF;   /* cards */
+  --color-af-border:    #E3E8EF;
+  --color-af-red:       #E11D2E;   /* slightly deeper than pure red for contrast on white */
+  --color-af-muted:     #64748B;
+
+  /* Semantic aliases */
+  --color-background:   #F5F7FB;
+  --color-foreground:   #0F172A;
+
+  /* Soft, layered card shadow */
+  --shadow-panel: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 12px rgb(15 23 42 / 0.05), 0 16px 40px -12px rgb(15 23 42 / 0.10);
+
+  /* Fonts */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================
+   BASE RESET
+   ============================================ */
+@layer base {
+  html {
+    background-color: #F5F7FB;
+  }
+
+  html, body {
+    color: #0F172A;
+    overflow-x: hidden;
+    height: 100%;
+    /* iOS safe area support */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Light gradient: white at the top fading to cool blue-grey, with a soft
+     brand-red glow top-right and a blue glow bottom-left for depth */
+  body {
+    background:
+      radial-gradient(1100px 520px at 100% -8%, rgb(225 29 46 / 0.07), transparent 60%),
+      radial-gradient(900px 600px at -10% 105%, rgb(59 130 246 / 0.08), transparent 60%),
+      linear-gradient(180deg, #FFFFFF 0%, #F4F6FA 45%, #E9EEF5 100%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: rgb(225 29 46 / 0.15);
+  }
+
+  * {
+    box-sizing: border-box;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================
+   UTILITIES
+   ============================================ */
+@layer utilities {
+  /* Hide scrollbars but keep scrollability */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Ticker marquee animation */
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* Mono tabular numbers for financial data */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
 }
